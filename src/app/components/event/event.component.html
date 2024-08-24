@@ -1,0 +1,56 @@
+@if(alertMessage){
+  <div class="alert-container">
+    <div class="alert" [ngClass]="{
+      'alert-success': alertType === 'success',
+      'alert-danger': alertType === 'danger',
+      'alert-warning': alertType === 'warning'
+    }" role="alert">
+      {{ alertMessage }}
+    </div>
+  </div>
+}
+<div class="container">
+  <div class="title d-flex justify-content-between align-items-center mb-3">
+    <h4>CRUD Database Events</h4>
+    <button type="button" class="btn btn-secondary btn-lg" routerLink="/add">Agregar Evento</button>
+  </div>
+
+  <div class="table-responsive">
+    @if(listEvents.length > 0){
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Titulo</th>
+            <th scope="col">Ubicacion</th>
+            <th scope="col">
+              <span (click)="toggleSortOrder()" class="sort-header">
+                Fecha Inicio <span [ngClass]="sortAsc ? 'sort-asc' : 'sort-desc'"></span>
+              </span>
+            </th>
+            <th scope="col">Fecha Fin</th>
+            <th scope="col">Costo</th>
+            <th scope="col">Comentarios</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of listEvents; track event){
+            <tr class="table-light">
+              <td data-label="Titulo" >{{event.titulo}}</td>
+              <td data-label="Ubicacion">{{event.ubicacion}}</td>
+              <td data-label="Fecha Inicio">{{event.fecha_inicio | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+              <td data-label="Fecha Fin">{{event.fecha_fin | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+              <td data-label="Costo">{{event.costo | currency:'EUR':'symbol'}}</td>
+              <td data-label="Comentarios">{{event.comentarios}}</td>
+              <td>
+                <button routerLink="/edit/{{event.id_event}}" type="button" class="btn btn-success btn-sm me-2">EDIT</button>
+                <button (click)="deleteEvent(event.id_event!)" type="button" class="btn btn-danger btn-sm">DELETE</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+</div>
+</div>
+

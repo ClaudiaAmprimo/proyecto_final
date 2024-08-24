@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HomeComponent } from "../home/home.component";
 import { LoginComponent } from "../login/login.component";
 import { RouterLink } from '@angular/router';
@@ -13,10 +13,12 @@ import { Router } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent {
-  isAuthenticated$;
+export class NavbarComponent implements OnInit {
+  isAuthenticated$: any;
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
   }
 

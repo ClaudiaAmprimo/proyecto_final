@@ -1,1 +1,85 @@
-<p>add-edit-event works!</p>
+<div class="row m-3">
+  <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
+    <div class="card bg-light mb-3">
+      <div class="card-header text-center">
+        <h6>{{operacion}} Evento</h6>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="eventForm" (submit)="onSubmit()">
+          <div class="form-group">
+            <label for="titulo">Título *</label>
+            <input type="text" id="titulo" class="form-control" formControlName="titulo" placeholder="Introduce el título">
+            @if (titulo.hasError('required') && titulo.touched){
+              <p class="form-error">El titulo es requerido</p>
+            }
+          </div>
+          <div class="form-group mt-2">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" class="form-control" formControlName="categoria">
+              <option value="Hospedaje">Hospedaje</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Turismo">Turismo</option>
+              <option value="Comida">Comida</option>
+            </select>
+            @if (categoria.hasError('required') && categoria.touched){
+              <p class="form-error">La categoría es requerida</p>
+            }
+          </div>
+          <div class="form-group mt-2">
+            <label for="ubicacion">Ubicación *</label>
+            <input type="text" id="ubicacion" class="form-control" formControlName="ubicacion" placeholder="Ingrese la ubicación">
+            @if (ubicacion.hasError('required') && ubicacion.touched){
+              <p class="form-error">La ubicacion es requerida</p>
+            }
+          </div>
+          <div class="form-group mt-2">
+            <label class="mx-2" for="fechaInicio">Fecha de Inicio *</label>
+            <input type="datetime-local" name="fechaInicio" formControlName="fechaInicio" placeholder="Ingrese la fecha de inicio">
+            @if (fechaInicio.hasError('required') && fechaInicio.touched){
+              <p class="form-error">La fecha es requerida</p>
+            }
+          </div>
+          <div class="form-group mt-2">
+            <label class="mx-2" for="fechaFin">Fecha de Fin *</label>
+            <input type="datetime-local" name="fechaFin" formControlName="fechaFin" placeholder="Ingrese la fecha de fin">
+            @if (fechaFin.hasError('required') && fechaFin.touched){
+              <p class="form-error">La fecha es requerida</p>
+            }
+          </div>
+          <div class="form-group mt-2">
+            <label for="costo">Costo *</label>
+            <input type="number" id="costo" class="form-control" formControlName="costo" placeholder="Ingrese el costo">
+            @if (costo.hasError('required') && costo.touched){
+              <p class="form-error">El costo es requerida</p>
+            }
+          </div>
+          <div class="form-group mt-2">
+            <label for="comentarios">Comentarios</label>
+            <input type="text" id="comentarios" class="form-control" formControlName="comentarios" placeholder="Ingrese comentarios">
+          </div>
+          <div class="form-group mt-2">
+            <label for="viaje">Viaje *</label>
+            <select id="viaje" class="form-control" formControlName="viajeId">
+              @for (viaje of viajes; track viaje) {
+                <option [value]="viaje.id_viaje">{{ viaje.titulo }}</option>
+              }
+            </select>
+            @if (viaje.hasError('required') && viaje.touched) {
+              <div class="form-error">El viaje es requerido</div>
+            }
+          </div>
+          <div class="row mt-2">
+            <div class="col text-center">
+              <button [disabled]="eventForm.invalid" type="submit" class="btn btn-success">Aceptar</button>
+              <button routerLink="/" type="button" class="btn btn-secondary mx-2">Volver</button>
+            </div>
+            <div class="mt-2">
+              <p class="text-end">* Campos requeridos</p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

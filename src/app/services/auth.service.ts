@@ -44,6 +44,39 @@ export class AuthService {
     );
   }
 
+  register(userData: { email: string; password: string; name: string; surname: string }): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    const body = new URLSearchParams();
+    body.set('email', userData.email);
+    body.set('password', userData.password);
+    body.set('name', userData.name);
+    body.set('surname', userData.surname);
+
+    return this.http.post<any>(`${this.baseUrl}/register`, body.toString(), { headers, withCredentials: true }).pipe(
+      tap(response => {
+        console.log('Registration response:', response);
+        if (response.code === 1) {
+          if (response.token) {
+            localStorage.setItem('token', response.token);
+          }
+
+          if (response.data && response.data.user) {
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            const userObj = response.data.user;
+            this.userId = userObj.id_user;
+          } else {
+            console.warn('No user data in registration response');
+          }
+
+          this.isAuthenticatedSubject.next(true);
+        } else {
+          console.error('Registration failed:', response.message);
+        }
+      })
+    );
+  }
+
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -56,6 +89,14 @@ export class AuthService {
 
   getUserId(): number | null {
     return this.userId;
+  }
+
+  public setUserId(id: number): void {
+    this.userId = id;
+  }
+
+  public setAuthenticated(isAuthenticated: boolean): void {
+    this.isAuthenticatedSubject.next(isAuthenticated);
   }
 
   private hasToken(): boolean {
