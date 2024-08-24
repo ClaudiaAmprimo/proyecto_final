@@ -30,6 +30,11 @@
           <li class="nav-item">
             <a (click)="onLogout()" class="nav-link">LOG OUT</a>
           </li>
+          <li class="nav-item">
+            @if(userPhotoUrl){
+              <img [src]="userPhotoUrl" alt="User Avatar" class="rounded-circle">
+            }
+          </li>
         } @else {
           <li class="nav-item">
             <a routerLink="/login" routerLinkActive="active" class="nav-link">LOG IN</a>

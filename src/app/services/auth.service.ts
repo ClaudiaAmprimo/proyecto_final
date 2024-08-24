@@ -44,31 +44,17 @@ export class AuthService {
     );
   }
 
-  register(userData: { email: string; password: string; name: string; surname: string }): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
-    const body = new URLSearchParams();
-    body.set('email', userData.email);
-    body.set('password', userData.password);
-    body.set('name', userData.name);
-    body.set('surname', userData.surname);
-
-    return this.http.post<any>(`${this.baseUrl}/register`, body.toString(), { headers, withCredentials: true }).pipe(
+  register(userData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/register`, userData, { withCredentials: true }).pipe(
       tap(response => {
-        console.log('Registration response:', response);
         if (response.code === 1) {
           if (response.token) {
             localStorage.setItem('token', response.token);
           }
-
           if (response.data && response.data.user) {
             localStorage.setItem('user', JSON.stringify(response.data.user));
-            const userObj = response.data.user;
-            this.userId = userObj.id_user;
-          } else {
-            console.warn('No user data in registration response');
+            this.isAuthenticatedSubject.next(true);
           }
-
-          this.isAuthenticatedSubject.next(true);
         } else {
           console.error('Registration failed:', response.message);
         }

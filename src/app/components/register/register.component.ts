@@ -17,6 +17,7 @@ export class RegisterComponent {
   confirmPassword: FormControl;
   name: FormControl;
   surname: FormControl;
+  selectedFile: File | null = null;
 
   constructor(private router: Router, private authService: AuthService) {
     this.email = new FormControl('', [Validators.required, Validators.email]);
@@ -34,14 +35,27 @@ export class RegisterComponent {
     });
   }
 
+  onFileSelected(event: Event) {
+    const fileInput = event.target as HTMLInputElement;
+    if (fileInput.files && fileInput.files.length > 0) {
+      this.selectedFile = fileInput.files[0];
+    }
+  }
+
   onSubmit() {
     if (this.registerForm.valid) {
-      this.authService.register({
-        email: this.email.value,
-        password: this.password.value,
-        name: this.name.value,
-        surname: this.surname.value
-      }).subscribe({
+      const formData = new FormData();
+      formData.append('email', this.email.value);
+      formData.append('password', this.password.value);
+      formData.append('confirmPassword', this.confirmPassword.value);
+      formData.append('name', this.name.value);
+      formData.append('surname', this.surname.value);
+
+      if (this.selectedFile) {
+        formData.append('file', this.selectedFile);
+      }
+
+      this.authService.register(formData).subscribe({
         next: response => {
           if (response.code === 1) {
             console.log('Registration successful');
