@@ -21,8 +21,16 @@
                 <p class="form-error">El password es requerido</p>
               }
             </div>
+            @if (loginError) {
+              <div class="form-error text-center mt-2">
+                {{ loginError }}
+              </div>
+            }
             <div class="col text-center">
               <button [disabled]="loginForm.invalid" type="submit" class="btn btn-success mt-4 w-100">Submit</button>
+            </div>
+            <div class="text-center mt-3">
+              <a [routerLink]="['/register']" class="goToRegister">Regístrate si aun no eres usuario</a>
             </div>
           </fieldset>
         </form>
