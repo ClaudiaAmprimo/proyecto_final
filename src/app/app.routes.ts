@@ -9,11 +9,13 @@ import { MapaComponent } from './components/mapa/mapa.component';
 import { RegisterComponent } from './components/register/register.component';
 import { EventComponent } from './components/event/event.component';
 import { ViajeComponent } from './components/viaje/viaje.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent},
   { path: 'register', component: RegisterComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]  },
   { path: 'viaje', component: ViajeComponent, canActivate: [AuthGuard] },
   { path: 'event', component: EventComponent, canActivate: [AuthGuard] },
   { path: 'add', component: AddEditEventComponent, canActivate: [AuthGuard] },

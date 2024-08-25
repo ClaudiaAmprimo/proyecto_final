@@ -10,17 +10,29 @@
             <label for="email">Email</label>
             <input formControlName="email" type="email" class="form-control" id="email" placeholder="Enter email">
             @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-              <div class="text-danger">
+              <div class="form-error">
                 A valid email is required.
+              </div>
+            } @else if (emailExistsError) {
+              <div class="form-error">
+                {{ emailExistsError }}
               </div>
             }
           </div>
           <div class="form-group">
             <label for="password">Password</label>
             <input formControlName="password" type="password" class="form-control" id="password" placeholder="Enter password">
-            @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-              <div class="text-danger">
+            @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+              <div class="form-error">
                 Password is required.
+              </div>
+            } @else if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+              <div class="form-error">
+                Password should be at least 5 characters.
+              </div>
+            } @else if (registerForm.get('password')?.hasError('pattern') && registerForm.get('password')?.touched) {
+              <div class="form-error">
+                Password must contain at least one letter and one number.
               </div>
             }
           </div>
@@ -28,8 +40,12 @@
             <label for="confirmPassword">Confirm Password</label>
             <input formControlName="confirmPassword" type="password" class="form-control" id="confirmPassword" placeholder="Confirm password">
             @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) {
-              <div class="text-danger">
+              <div class="form-error">
                 Password confirmation is required.
+              </div>
+            } @else if (registerForm.errors?.['passwordsMismatch'] && registerForm.get('confirmPassword')?.touched) {
+              <div class="form-error">
+                Passwords do not match.
               </div>
             }
           </div>
@@ -37,7 +53,7 @@
             <label for="name">Name</label>
             <input formControlName="name" type="text" class="form-control" id="name" placeholder="Enter your name">
             @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
-              <div class="text-danger">
+              <div class="form-error">
                 Name is required.
               </div>
             }
@@ -46,14 +62,14 @@
             <label for="surname">Surname</label>
             <input formControlName="surname" type="text" class="form-control" id="surname" placeholder="Enter your surname">
             @if (registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched) {
-              <div class="text-danger">
+              <div class="form-error">
                 Surname is required.
               </div>
             }
           </div>
           <div class="form-group">
-            <label for="photo">Foto</label>
-            <input type="file" id="photo" (change)="onFileSelected($event)">
+            <label for="photo">Foto de Perfil</label>
+            <input type="file" class="m-2" id="photo" (change)="onFileSelected($event)">
           </div>
           <button type="submit" class="btn btn-success mt-4 w-100" [disabled]="registerForm.invalid">Register</button>
         </form>

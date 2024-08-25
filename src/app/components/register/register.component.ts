@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { confirmPasswordValidator } from '../../validators/confirm-password.validator';
 
 @Component({
   selector: 'app-register',
@@ -18,10 +19,15 @@ export class RegisterComponent {
   name: FormControl;
   surname: FormControl;
   selectedFile: File | null = null;
+  emailExistsError: string | null = null;
 
   constructor(private router: Router, private authService: AuthService) {
     this.email = new FormControl('', [Validators.required, Validators.email]);
-    this.password = new FormControl('', Validators.required);
+    this.password = new FormControl('', [
+      Validators.required,
+      Validators.minLength(5),
+      Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{5,}$/)
+    ]);
     this.confirmPassword = new FormControl('', Validators.required);
     this.name = new FormControl('', Validators.required);
     this.surname = new FormControl('', Validators.required);
@@ -32,7 +38,7 @@ export class RegisterComponent {
       confirmPassword: this.confirmPassword,
       name: this.name,
       surname: this.surname,
-    });
+    }, { validators: confirmPasswordValidator() });
   }
 
   onFileSelected(event: Event) {
@@ -44,6 +50,8 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.registerForm.valid) {
+      this.emailExistsError = null;
+
       const formData = new FormData();
       formData.append('email', this.email.value);
       formData.append('password', this.password.value);
@@ -76,7 +84,11 @@ export class RegisterComponent {
           }
         },
         error: error => {
-          console.error('Registration error', error);
+          if (error.status === 400 && error.error.message === 'Ya existe un usuario con el mismo correo electrónico') {
+            this.emailExistsError = 'This email is already exists.';
+          } else {
+            console.error('Registration error', error);
+          }
         }
       });
     }
