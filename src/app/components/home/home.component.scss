@@ -29,15 +29,6 @@
   padding: 20px;
 }
 
-.testimonials-container {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #d4d4d4;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
 .testimonials {
   padding: 8px;
 }
@@ -46,7 +37,24 @@
   margin-bottom: 20px;
 }
 
-.estrellas{
-  color: #856d0e;
+.estrellas {
+  color: #fad647 !important;
   font-size: 1.5rem;
+}
+
+.white-section {
+  background-color: #ffffff;
+}
+
+.black-section {
+  background-color: #1a1a1a;
+}
+
+.black-section h4, .black-section p {
+  color: #ffffff;
+}
+
+.small-text {
+  font-size: 0.9rem;
+  padding: 4px;
 }

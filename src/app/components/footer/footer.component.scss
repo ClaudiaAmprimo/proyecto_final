@@ -1,0 +1,30 @@
+.footer {
+  background-color: #c7c7c7;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.7rem;
+}
+
+.footer ul {
+  padding-left: 0;
+  list-style: none;
+  font-size: 0.8rem;
+}
+
+.footer ul li {
+  display: inline;
+  margin-right: 15px;
+}
+
+.footer ul li a {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.footer ul li a:hover {
+  text-decoration: underline;
+}
