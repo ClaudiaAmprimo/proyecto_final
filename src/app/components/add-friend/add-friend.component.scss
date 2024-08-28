@@ -1,0 +1,25 @@
+.search-bar {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  margin-top: 120px;
+  border-radius: 14px;
+}
+
+.search-results ul,
+.friends-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.search-results li,
+.friends-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.margen-navbar {
+  margin-top: 58px;
+}

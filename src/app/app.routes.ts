@@ -10,6 +10,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { EventComponent } from './components/event/event.component';
 import { ViajeComponent } from './components/viaje/viaje.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { AddFriendComponent } from './components/add-friend/add-friend.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,5 +24,6 @@ export const routes: Routes = [
   { path: 'map', component: MapaComponent, canActivate: [AuthGuard] },
   { path: 'calendar', component: FullCalendarComponent, canActivate: [AuthGuard] },
   { path: 'chart', component: GraficosComponent, canActivate: [AuthGuard] },
+  { path: 'amigos', component: AddFriendComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '', pathMatch: 'full'}
 ];
