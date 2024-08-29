@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AmigoService } from '../../services/amigo.service';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,14 +12,18 @@ import { User } from '../../interfaces/user';
   templateUrl: './add-friend.component.html',
   styleUrls: ['./add-friend.component.scss']
 })
-export class AddFriendComponent {
+export class AddFriendComponent implements OnInit{
   searchControl = new FormControl('');
   searchResults: User[] = [];
   friendsList: User[] = [];
+  currentUser: User | null = null;
 
   constructor(private amigoService: AmigoService) { }
 
   ngOnInit() {
+    this.loadCurrentUser();
+    this.loadFriends();
+
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       switchMap(query => {
@@ -31,10 +35,18 @@ export class AddFriendComponent {
         }
       })
     ).subscribe((results: User[]) => {
-      this.searchResults = results;
+      this.searchResults = results.filter(user =>
+        user.id_user !== this.currentUser?.id_user &&
+        !this.friendsList.some(friend => friend.id_user === user.id_user)
+      );
     });
+  }
 
-    this.loadFriends();
+  loadCurrentUser() {
+    const user = localStorage.getItem('user');
+    if (user) {
+      this.currentUser = JSON.parse(user);
+    }
   }
 
   loadFriends() {
@@ -45,15 +57,27 @@ export class AddFriendComponent {
   }
 
   addFriend(amigo_id: number) {
-    this.amigoService.addFriend(amigo_id).subscribe(() => {
-      this.loadFriends();
-      this.searchControl.setValue('');
+    this.amigoService.addFriend(amigo_id).subscribe({
+      next: () => {
+        this.loadFriends();
+        this.searchControl.setValue('');
+      },
+      error: (error) => {
+        console.error('Error al agregar amigo:', error);
+        alert('Hubo un problema al agregar al amigo. Intenta de nuevo.');
+      }
     });
   }
 
   removeFriend(amigo_id: number) {
-    this.amigoService.removeFriend(amigo_id).subscribe(() => {
-      this.loadFriends();
+    this.amigoService.removeFriend(amigo_id).subscribe({
+      next: () => {
+        this.loadFriends();
+      },
+      error: (error) => {
+        console.error('Error al eliminar amigo:', error);
+        alert('Hubo un problema al eliminar al amigo. Intenta de nuevo.');
+      }
     });
   }
 }

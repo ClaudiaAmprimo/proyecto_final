@@ -1,35 +1,44 @@
 <div class="margen-navbar"></div>
+
 <div class="search-bar">
   <input [formControl]="searchControl" placeholder="Busca amigos por nombre o email" class="form-control search-bar">
 </div>
 
 <div class="container">
-<div class="search-results mt-3">
-  @if (searchResults.length > 0) {
-    <ul>
-      @for (user of searchResults; track user.id_user) {
-        <li>
-          {{ user.name }} {{ user.surname || '' }} ({{ user.email || '' }})
-          <button (click)="addFriend(user.id_user)" class="btn btn-success btn-sm">Agregar</button>
-        </li>
-      }
-    </ul>
-  }
-</div>
+  <div class="search-results mt-3">
+    @if (searchResults.length > 0) {
+      <ul>
+        @for (user of searchResults; track user.id_user) {
+          <li>
+            @if(user.photo) {
+              <img [src]="'http://localhost:3000/uploads/' + user.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+            }
+            <span class="me-auto">{{ user.name }} {{ user.surname || '' }} - {{ user.email || '' }}</span>
+            <button (click)="addFriend(user.id_user)" class="btn btn-success btn-sm">Agregar</button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
 </div>
 
 <div class="container">
-<div class="friends-list mt-3">
-  <h3>Tus amigos</h3>
-  @if (friendsList && friendsList.length > 0) {
-    <ul>
-      @for (friend of friendsList; track friend.id_user) {
-        <li>
-          {{ friend.name }} {{ friend.surname || '' }} ({{ friend.email || '' }})
-          <button (click)="removeFriend(friend.id_user)" class="btn btn-danger btn-sm">Eliminar</button>
-        </li>
-      }
-    </ul>
-  }
-</div>
+  <div class="friends-list mt-3">
+    <h3>Tus amigos</h3>
+    @if (friendsList && friendsList.length > 0) {
+      <ul>
+        @for (friend of friendsList; track friend.id_user) {
+          <li>
+            @if(friend.photo) {
+              <img [src]="'http://localhost:3000/uploads/' + friend.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+            }
+            <span class="me-auto">{{ friend.name }} {{ friend.surname || '' }} - {{ friend.email || '' }}</span>
+            <button (click)="removeFriend(friend.id_user)" class="btn btn-danger btn-sm">Eliminar</button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p>No tienes amigos agregados.</p>
+    }
+  </div>
 </div>

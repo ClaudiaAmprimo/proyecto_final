@@ -15,24 +15,15 @@ import { Observable } from 'rxjs';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent implements OnInit {
-  isAuthenticated$: Observable<boolean> = new Observable<boolean>(); 
-  userPhotoUrl: string | null = null;
+  isAuthenticated$: Observable<boolean> = new Observable<boolean>();
+  userPhotoUrl$: Observable<string | null>;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {
+    this.userPhotoUrl$ = this.authService.userPhotoUrl$;
+  }
 
   ngOnInit(): void {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
-
-    this.isAuthenticated$.subscribe((isAuthenticated: boolean) => {
-      if (isAuthenticated) {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (user && user.photo) {
-          this.userPhotoUrl = `http://localhost:3000/uploads/${user.photo}`;
-        }
-      } else {
-        this.userPhotoUrl = null;
-      }
-    });
   }
 
   onLogout() {

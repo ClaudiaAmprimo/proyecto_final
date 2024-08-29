@@ -6,9 +6,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarColor02">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <!-- <li class="nav-item">
-          <a class="nav-link" routerLink="/">Home</a>
-        </li> -->
         <li class="nav-item">
           <a class="nav-link" routerLink="/dashboard">Dashboard</a>
         </li>
@@ -37,8 +34,10 @@
             <a (click)="onLogout()" class="nav-link">LOG OUT</a>
           </li>
           <li class="nav-item">
-            @if(userPhotoUrl){
-              <img [src]="userPhotoUrl" alt="User Avatar" class="rounded-circle">
+            @if (userPhotoUrl$ | async) {
+              <img [src]="userPhotoUrl$ | async" alt="User Avatar" class="rounded-circle" width="40" height="40">
+            } @else {
+              <img src="http://localhost:3000/uploads/Profile_avatar_placeholder.png" alt="User Avatar" class="rounded-circle" width="40" height="40">
             }
           </li>
         } @else {
