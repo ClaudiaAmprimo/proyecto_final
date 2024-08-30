@@ -11,11 +11,13 @@ import { EventComponent } from './components/event/event.component';
 import { ViajeComponent } from './components/viaje/viaje.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AddFriendComponent } from './components/add-friend/add-friend.component';
+import { PerfilComponent } from './components/perfil/perfil.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent},
   { path: 'register', component: RegisterComponent },
+  { path: 'perfil', component: PerfilComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]  },
   { path: 'viaje', component: ViajeComponent, canActivate: [AuthGuard] },
   { path: 'event', component: EventComponent, canActivate: [AuthGuard] },

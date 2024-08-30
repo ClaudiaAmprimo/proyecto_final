@@ -4,6 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { User } from '../../interfaces/user';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-add-friend',
@@ -17,8 +18,10 @@ export class AddFriendComponent implements OnInit{
   searchResults: User[] = [];
   friendsList: User[] = [];
   currentUser: User | null = null;
+  alertMessage: string | null = null;
+  alertType: 'success' | 'danger' | 'warning' = 'success';
 
-  constructor(private amigoService: AmigoService) { }
+  constructor(private amigoService: AmigoService, private alertService: AlertService) { }
 
   ngOnInit() {
     this.loadCurrentUser();
@@ -39,6 +42,18 @@ export class AddFriendComponent implements OnInit{
         user.id_user !== this.currentUser?.id_user &&
         !this.friendsList.some(friend => friend.id_user === user.id_user)
       );
+    });
+
+    this.alertService.alertMessage$.subscribe(alert => {
+      if (alert) {
+        this.alertMessage = alert.message;
+        this.alertType = alert.type;
+        setTimeout(() => {
+          this.alertService.clearAlert();
+        }, 5000);
+      } else {
+        this.alertMessage = null;
+      }
     });
   }
 
@@ -61,10 +76,11 @@ export class AddFriendComponent implements OnInit{
       next: () => {
         this.loadFriends();
         this.searchControl.setValue('');
+        this.alertService.showAlert('Amigo agregado con éxito', 'success');
       },
       error: (error) => {
         console.error('Error al agregar amigo:', error);
-        alert('Hubo un problema al agregar al amigo. Intenta de nuevo.');
+        this.alertService.showAlert('Hubo un problema al agregar al amigo. Intenta de nuevo.', 'danger');
       }
     });
   }
@@ -73,10 +89,11 @@ export class AddFriendComponent implements OnInit{
     this.amigoService.removeFriend(amigo_id).subscribe({
       next: () => {
         this.loadFriends();
+        this.alertService.showAlert('Amigo eliminado con éxito', 'warning');
       },
       error: (error) => {
         console.error('Error al eliminar amigo:', error);
-        alert('Hubo un problema al eliminar al amigo. Intenta de nuevo.');
+        this.alertService.showAlert('Hubo un problema al eliminar al amigo. Intenta de nuevo.', 'danger');
       }
     });
   }

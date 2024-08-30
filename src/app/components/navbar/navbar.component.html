@@ -7,45 +7,49 @@
     <div class="collapse navbar-collapse" id="navbarColor02">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+          <a class="nav-link" routerLink="/dashboard" (click)="closeNavbar()">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/viaje">Viaje</a>
+          <a class="nav-link" routerLink="/viaje" (click)="closeNavbar()">Viaje</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/event">Itinerario</a>
+          <a class="nav-link" routerLink="/event" (click)="closeNavbar()">Itinerario</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/map">Mapa</a>
+          <a class="nav-link" routerLink="/map" (click)="closeNavbar()">Mapa</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/calendar">Calendario</a>
+          <a class="nav-link" routerLink="/calendar" (click)="closeNavbar()">Calendario</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/chart">Costos</a>
+          <a class="nav-link" routerLink="/chart" (click)="closeNavbar()">Costos</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/amigos">Amigos</a>
+          <a class="nav-link" routerLink="/amigos" (click)="closeNavbar()">Amigos</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         @if (isAuthenticated$ | async) {
           <li class="nav-item">
-            <a (click)="onLogout()" class="nav-link">LOG OUT</a>
+            <a (click)="onLogout(); closeNavbar()" class="nav-link">LOG OUT</a>
           </li>
           <li class="nav-item">
             @if (userPhotoUrl$ | async) {
-              <img [src]="userPhotoUrl$ | async" alt="User Avatar" class="rounded-circle" width="40" height="40">
+              <a routerLink="/perfil" (click)="closeNavbar()">
+                <img [src]="userPhotoUrl$ | async" alt="User Avatar" class="rounded-circle" width="40" height="40">
+              </a>
             } @else {
-              <img src="http://localhost:3000/uploads/Profile_avatar_placeholder.png" alt="User Avatar" class="rounded-circle" width="40" height="40">
+              <a routerLink="/perfil" (click)="closeNavbar()">
+                <img src="http://localhost:3000/uploads/Profile_avatar_placeholder.png" alt="User Avatar" class="rounded-circle" width="40" height="40">
+              </a>
             }
           </li>
         } @else {
           <li class="nav-item">
-            <a routerLink="/login" routerLinkActive="active" class="nav-link">LOG IN</a>
+            <a routerLink="/login" routerLinkActive="active" class="nav-link" (click)="closeNavbar()">LOG IN</a>
           </li>
           <li class="nav-item">
-            <a routerLink="/register" routerLinkActive="active" class="nav-link">REGISTER</a>
+            <a routerLink="/register" routerLinkActive="active" class="nav-link" (click)="closeNavbar()">REGISTER</a>
           </li>
         }
       </ul>

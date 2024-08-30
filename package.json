@@ -29,6 +29,7 @@
     "@angular-devkit/build-angular": "^18.2.1",
     "@angular/cli": "^18.2.1",
     "@angular/compiler-cli": "^18.2.0",
+    "@types/bootstrap": "^5.2.10",
     "@types/date-fns": "^2.6.0",
     "@types/jasmine": "~5.1.0",
     "@types/mapbox-gl": "^3.4.0",

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { HomeComponent } from "../home/home.component";
 import { LoginComponent } from "../login/login.component";
 import { RouterLink } from '@angular/router';
@@ -18,12 +18,19 @@ export class NavbarComponent implements OnInit {
   isAuthenticated$: Observable<boolean> = new Observable<boolean>();
   userPhotoUrl$: Observable<string | null>;
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService, private router: Router, private elementRef: ElementRef) {
     this.userPhotoUrl$ = this.authService.userPhotoUrl$;
   }
 
   ngOnInit(): void {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
+  }
+
+  closeNavbar() {
+    const navbar = this.elementRef.nativeElement.querySelector('.navbar-collapse');
+    if (navbar) {
+      navbar.classList.remove('show');
+    }
   }
 
   onLogout() {
