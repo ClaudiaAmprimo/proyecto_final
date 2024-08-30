@@ -1,2 +1,40 @@
 <div class="margen-navbar"></div>
-<p>viaje works!</p>
+
+<div class="container mt-5">
+  <h2 class="text-center">Crea un Nuevo Viaje</h2>
+  <form [formGroup]="viajeForm" (ngSubmit)="onSubmit()">
+    <div class="form-group mb-3">
+      <label for="titulo">Título</label>
+      <input type="text" id="titulo" class="form-control" formControlName="titulo" placeholder="Ingrese el título del viaje">
+      <div *ngIf="viajeForm.get('titulo')?.touched && viajeForm.get('titulo')?.invalid" class="text-danger">
+        El título es requerido.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="ubicacion">Ubicación</label>
+      <input type="text" id="ubicacion" class="form-control" formControlName="ubicacion" placeholder="Ingrese la ubicación del viaje">
+      <div *ngIf="viajeForm.get('ubicacion')?.touched && viajeForm.get('ubicacion')?.invalid" class="text-danger">
+        La ubicación es requerida.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="fecha_inicio">Fecha de Inicio</label>
+      <input type="date" id="fecha_inicio" class="form-control" formControlName="fecha_inicio">
+      <div *ngIf="viajeForm.get('fecha_inicio')?.touched && viajeForm.get('fecha_inicio')?.invalid" class="text-danger">
+        La fecha de inicio es requerida.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="fecha_fin">Fecha de Fin</label>
+      <input type="date" id="fecha_fin" class="form-control" formControlName="fecha_fin">
+      <div *ngIf="viajeForm.get('fecha_fin')?.touched && viajeForm.get('fecha_fin')?.invalid" class="text-danger">
+        La fecha de fin es requerida.
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-dark custom-button" [disabled]="viajeForm.invalid">Crear Viaje</button>
+  </form>
+</div>

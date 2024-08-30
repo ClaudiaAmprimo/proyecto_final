@@ -16,4 +16,8 @@ export class ViajeService {
   getUserViajes(): Observable<any> {
     return this.http.get(`${this.baseUrl}viaje`);
   }
+
+  createViaje(viajeData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}viaje`, viajeData);
+  }
 }
