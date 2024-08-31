@@ -4,6 +4,7 @@ import { ViajeService } from '../../services/viaje.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AlertService } from '../../services/alert.service';
+import { AmigoService } from '../../services/amigo.service';
 
 @Component({
   selector: 'app-viaje',
@@ -14,30 +15,64 @@ import { AlertService } from '../../services/alert.service';
 })
 export class ViajeComponent implements OnInit {
   viajeForm: FormGroup;
+  amigos: any[] = [];
 
-  constructor(private viajeService: ViajeService, private router: Router, private alertService: AlertService) {
+  constructor(private viajeService: ViajeService, private router: Router,
+    private alertService: AlertService, private amigoService: AmigoService) {
     this.viajeForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
       ubicacion: new FormControl('', Validators.required),
       fecha_inicio: new FormControl('', Validators.required),
-      fecha_fin: new FormControl('', Validators.required)
+      fecha_fin: new FormControl('', Validators.required),
+      amigo: new FormControl('', Validators.required)
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadAmigos();
+  }
+
+  loadAmigos() {
+    this.amigoService.getFriends().subscribe({
+      next: (response) => {
+        this.amigos = response;
+      },
+      error: (error) => {
+        console.error('Error al obtener la lista de amigos:', error);
+      }
+    });
+  }
 
   onSubmit(): void {
-    if (this.viajeForm.valid) {
-      this.viajeService.createViaje(this.viajeForm.value).subscribe({
-        next: (response) => {
-          this.alertService.showAlert('Viaje creado y asociado exitosamente', 'success');
-          this.viajeForm.reset();  
-        },
-        error: (error) => {
-          console.error('Error al crear el viaje:', error);
-          this.alertService.showAlert('Error al crear el viaje', 'danger');
-        }
-      });
-    }
+  if (this.viajeForm.valid) {
+    const viajeData = this.viajeForm.value;
+
+    this.viajeService.createViaje(viajeData).subscribe({
+      next: (response) => {
+        console.log('Viaje creado exitosamente', response);
+
+        const viajeId = response.data.id_viaje;
+
+        const amigoId = this.viajeForm.get('amigo')?.value;
+
+        this.viajeService.asociarAmigo(viajeId, amigoId).subscribe({
+          next: () => {
+            console.log('Amigo asociado exitosamente al viaje');
+            this.alertService.showAlert('Viaje creado y amigo asociado exitosamente', 'success');
+            this.viajeForm.reset();
+            this.router.navigate(['/event']);
+          },
+          error: (error) => {
+            console.error('Error al asociar el amigo al viaje:', error);
+            this.alertService.showAlert('Error al asociar el amigo al viaje', 'danger');
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error al crear el viaje:', error);
+        this.alertService.showAlert('Error al crear el viaje', 'danger');
+      }
+    });
   }
+}
 }

@@ -1,40 +1,67 @@
 <div class="margen-navbar"></div>
 
-<div class="container mt-5">
-  <h2 class="text-center">Crea un Nuevo Viaje</h2>
-  <form [formGroup]="viajeForm" (ngSubmit)="onSubmit()">
-    <div class="form-group mb-3">
-      <label for="titulo">Título</label>
-      <input type="text" id="titulo" class="form-control" formControlName="titulo" placeholder="Ingrese el título del viaje">
-      <div *ngIf="viajeForm.get('titulo')?.touched && viajeForm.get('titulo')?.invalid" class="text-danger">
-        El título es requerido.
+<div class="row m-3">
+  <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
+    <div class="card bg-light mb-3">
+      <div class="card-header text-center">
+        <h6>Crea un Nuevo Viaje</h6>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="viajeForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="titulo">Título *</label>
+            <input type="text" id="titulo" class="form-control" formControlName="titulo" placeholder="Ingrese el título del viaje">
+            @if (viajeForm.get('titulo')?.touched && viajeForm.get('titulo')?.invalid) {
+              <div class="text-danger">El título es requerido.</div>
+            }
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="ubicacion">Ubicación *</label>
+            <input type="text" id="ubicacion" class="form-control" formControlName="ubicacion" placeholder="Ingrese la ubicación del viaje">
+            @if (viajeForm.get('ubicacion')?.touched && viajeForm.get('ubicacion')?.invalid) {
+              <div class="text-danger">La ubicación es requerida.</div>
+            }
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="fecha_inicio">Fecha de Inicio *</label>
+            <input type="date" id="fecha_inicio" class="form-control" formControlName="fecha_inicio">
+            @if (viajeForm.get('fecha_inicio')?.touched && viajeForm.get('fecha_inicio')?.invalid) {
+              <div class="text-danger">La fecha de inicio es requerida.</div>
+            }
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="fecha_fin">Fecha de Fin *</label>
+            <input type="date" id="fecha_fin" class="form-control" formControlName="fecha_fin">
+            @if (viajeForm.get('fecha_fin')?.touched && viajeForm.get('fecha_fin')?.invalid) {
+              <div class="text-danger">La fecha de fin es requerida.</div>
+            }
+          </div>
+
+          <div class="form-group mt-2">
+            <label for="amigo">Selecciona un Amigo *</label>
+            <select id="amigo" class="form-control" formControlName="amigo">
+              <option value="" selected>Seleccione un amigo</option>
+              @for (amigo of amigos; track amigo) {
+                <option [value]="amigo.id_user">{{ amigo.name }} {{ amigo.surname }}</option>
+              }
+            </select>
+            @if (viajeForm.get('amigo')?.touched && viajeForm.get('amigo')?.invalid) {
+              <div class="text-danger">Debes seleccionar un amigo.</div>
+            }
+          </div>
+
+          <div class="row mt-3">
+            <div class="col text-center">
+              <button type="submit" class="btn btn-success" [disabled]="viajeForm.invalid">Crear Viaje</button>
+              <button routerLink="/" type="button" class="btn btn-secondary mx-2">Volver</button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
-
-    <div class="form-group mb-3">
-      <label for="ubicacion">Ubicación</label>
-      <input type="text" id="ubicacion" class="form-control" formControlName="ubicacion" placeholder="Ingrese la ubicación del viaje">
-      <div *ngIf="viajeForm.get('ubicacion')?.touched && viajeForm.get('ubicacion')?.invalid" class="text-danger">
-        La ubicación es requerida.
-      </div>
-    </div>
-
-    <div class="form-group mb-3">
-      <label for="fecha_inicio">Fecha de Inicio</label>
-      <input type="date" id="fecha_inicio" class="form-control" formControlName="fecha_inicio">
-      <div *ngIf="viajeForm.get('fecha_inicio')?.touched && viajeForm.get('fecha_inicio')?.invalid" class="text-danger">
-        La fecha de inicio es requerida.
-      </div>
-    </div>
-
-    <div class="form-group mb-3">
-      <label for="fecha_fin">Fecha de Fin</label>
-      <input type="date" id="fecha_fin" class="form-control" formControlName="fecha_fin">
-      <div *ngIf="viajeForm.get('fecha_fin')?.touched && viajeForm.get('fecha_fin')?.invalid" class="text-danger">
-        La fecha de fin es requerida.
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-dark custom-button" [disabled]="viajeForm.invalid">Crear Viaje</button>
-  </form>
+  </div>
 </div>

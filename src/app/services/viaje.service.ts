@@ -20,4 +20,9 @@ export class ViajeService {
   createViaje(viajeData: any): Observable<any> {
     return this.http.post(`${this.baseUrl}viaje`, viajeData);
   }
+
+  asociarAmigo(viajeId: number, amigoId: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}users-viajes`, { user_id: amigoId, viaje_id: viajeId });
+  }
+
 }
