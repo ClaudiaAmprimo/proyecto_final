@@ -24,7 +24,7 @@ export class ViajeComponent implements OnInit {
       ubicacion: new FormControl('', Validators.required),
       fecha_inicio: new FormControl('', Validators.required),
       fecha_fin: new FormControl('', Validators.required),
-      amigo: new FormControl('', Validators.required)
+      amigos: new FormControl([], Validators.required)
     });
   }
 
@@ -43,36 +43,41 @@ export class ViajeComponent implements OnInit {
     });
   }
 
+
   onSubmit(): void {
-  if (this.viajeForm.valid) {
-    const viajeData = this.viajeForm.value;
+    if (this.viajeForm.valid) {
+      const viajeData = this.viajeForm.value;
 
-    this.viajeService.createViaje(viajeData).subscribe({
-      next: (response) => {
-        console.log('Viaje creado exitosamente', response);
+      this.viajeService.createViaje(viajeData).subscribe({
+        next: (response) => {
+          console.log('Viaje creado exitosamente', response);
 
-        const viajeId = response.data.id_viaje;
+          const viajeId = response.data.id_viaje;
+          const amigosSeleccionados = this.viajeForm.get('amigos')?.value;
 
-        const amigoId = this.viajeForm.get('amigo')?.value;
-
-        this.viajeService.asociarAmigo(viajeId, amigoId).subscribe({
-          next: () => {
-            console.log('Amigo asociado exitosamente al viaje');
-            this.alertService.showAlert('Viaje creado y amigo asociado exitosamente', 'success');
-            this.viajeForm.reset();
-            this.router.navigate(['/event']);
-          },
-          error: (error) => {
-            console.error('Error al asociar el amigo al viaje:', error);
-            this.alertService.showAlert('Error al asociar el amigo al viaje', 'danger');
+          if (amigosSeleccionados && amigosSeleccionados.length > 0) {
+            amigosSeleccionados.forEach((amigoId: number) => {
+              this.viajeService.asociarAmigo(viajeId, amigoId).subscribe({
+                next: () => {
+                  console.log(`Amigo con ID ${amigoId} asociado exitosamente al viaje`);
+                },
+                error: (error) => {
+                  console.error('Error al asociar el amigo al viaje:', error);
+                  this.alertService.showAlert('Error al asociar el amigo al viaje', 'danger');
+                }
+              });
+            });
           }
-        });
-      },
-      error: (error) => {
-        console.error('Error al crear el viaje:', error);
-        this.alertService.showAlert('Error al crear el viaje', 'danger');
-      }
-    });
+
+          this.alertService.showAlert('Viaje creado exitosamente', 'success');
+          this.viajeForm.reset();
+          this.router.navigate(['/event']);
+        },
+        error: (error) => {
+          console.error('Error al crear el viaje:', error);
+          this.alertService.showAlert('Error al crear el viaje', 'danger');
+        }
+      });
+    }
   }
-}
 }

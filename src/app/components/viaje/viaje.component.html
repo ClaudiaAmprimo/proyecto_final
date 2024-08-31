@@ -42,17 +42,16 @@
           </div>
 
           <div class="form-group mt-2">
-            <label for="amigo">Selecciona un Amigo *</label>
-            <select id="amigo" class="form-control" formControlName="amigo">
-              <option value="" selected>Seleccione un amigo</option>
-              @for (amigo of amigos; track amigo) {
+            <label for="amigos">Selecciona Amigos *</label>
+            <select id="amigos" class="form-control" formControlName="amigos" multiple>
+              @for(amigo of amigos; track amigo){
                 <option [value]="amigo.id_user">{{ amigo.name }} {{ amigo.surname }}</option>
               }
             </select>
-            @if (viajeForm.get('amigo')?.touched && viajeForm.get('amigo')?.invalid) {
-              <div class="text-danger">Debes seleccionar un amigo.</div>
+            @if (viajeForm.get('amigos')?.touched && viajeForm.get('amigos')?.invalid) {
+              <div class="text-danger">Debes seleccionar al menos un amigo.</div>
             }
-          </div>
+          </div> 
 
           <div class="row mt-3">
             <div class="col text-center">
