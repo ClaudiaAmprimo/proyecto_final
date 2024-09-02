@@ -12,6 +12,7 @@ import { ViajeComponent } from './components/viaje/viaje.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AddFriendComponent } from './components/add-friend/add-friend.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
+import { AddEditViajeComponent } from './components/add-edit-viaje/add-edit-viaje.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'perfil', component: PerfilComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]  },
   { path: 'viaje', component: ViajeComponent, canActivate: [AuthGuard] },
+  { path: 'add-viaje', component: AddEditViajeComponent, canActivate: [AuthGuard] },
   { path: 'event', component: EventComponent, canActivate: [AuthGuard] },
   { path: 'add', component: AddEditEventComponent, canActivate: [AuthGuard] },
   { path: 'edit/:id', component: AddEditEventComponent, canActivate: [AuthGuard] },

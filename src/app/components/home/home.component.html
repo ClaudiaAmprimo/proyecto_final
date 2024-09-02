@@ -4,31 +4,31 @@
     <div class="carousel-item active">
       <img src="stock-photo-1.jpg" class="d-block w-100" alt="amigos viajando">
       <div class="carousel-caption d-flex justify-content-center align-items-center">
-        <button type="button" class="btn btn-light custom-button" [routerLink]="['/viaje']">INICIA TU VIAJE AHORA</button>
+        <button type="button" class="btn btn-light custom-button" [routerLink]="['/add-viaje']">INICIA TU VIAJE AHORA</button>
       </div>
     </div>
     <div class="carousel-item">
       <img src="stock-photo-2.jpg" class="d-block w-100" alt="amigos viajando">
       <div class="carousel-caption d-flex justify-content-center align-items-center">
-        <button type="button" class="btn btn-light custom-button" [routerLink]="['/viaje']">INICIA TU VIAJE AHORA</button>
+        <button type="button" class="btn btn-light custom-button" [routerLink]="['/add-viaje']">INICIA TU VIAJE AHORA</button>
       </div>
     </div>
     <div class="carousel-item">
       <img src="stock-photo-3.jpg" class="d-block w-100" alt="amigos viajando">
       <div class="carousel-caption d-flex justify-content-center align-items-center">
-        <button type="button" class="btn btn-light custom-button" [routerLink]="['/viaje']">INICIA TU VIAJE AHORA</button>
+        <button type="button" class="btn btn-light custom-button" [routerLink]="['/add-viaje']">INICIA TU VIAJE AHORA</button>
       </div>
     </div>
     <div class="carousel-item">
       <img src="stock-photo-4.jpg" class="d-block w-100" alt="amigos viajando">
       <div class="carousel-caption d-flex justify-content-center align-items-center">
-        <button type="button" class="btn btn-light custom-button" [routerLink]="['/viaje']">INICIA TU VIAJE AHORA</button>
+        <button type="button" class="btn btn-light custom-button" [routerLink]="['/add-viaje']">INICIA TU VIAJE AHORA</button>
       </div>
     </div>
     <div class="carousel-item">
       <img src="stock-photo-5.jpg" class="d-block w-100" alt="amigos viajando">
       <div class="carousel-caption d-flex justify-content-center align-items-center">
-        <button type="button" class="btn btn-light custom-button" [routerLink]="['/viaje']">INICIA TU VIAJE AHORA</button>
+        <button type="button" class="btn btn-light custom-button" [routerLink]="['/add-viaje']">INICIA TU VIAJE AHORA</button>
       </div>
     </div>
   </div>
@@ -38,11 +38,9 @@
 <div class="white-section pb-5">
 <div class="container">
   <div class="info-section text-center">
-    <!-- <hr> -->
     <p>Centraliza todos los detalles de tu viaje en una sola app.<br> Organiza itinerarios, coordina con tus compañeros y mantén
       todo al alcance de la mano, sin complicaciones. <br> ¡Haz que cada aventura sea más fácil y divertida!</p>
     <h4>PLANIFICA JUNTOS, VIAJA MEJOR</h4>
-    <!-- <hr> -->
   </div>
 </div>
 </div>
@@ -69,51 +67,59 @@
 </div>
 </div>
 
-    <div class="container text-center mt-5"><h4>DESTINOS MÁS FRECUENTES</h4></div>
-    <div class="container my-5">
-      <div class="row">
-        <div class="col-md-6 mb-4">
-          <div class="destination-card" style="background-color: #f0f4f7;">
-            <img src="bangkok.jpg" class="img-fluid" alt="Bangkok Foto">
-            <div class="card-body text-center py-3">
-              <h3 class="text-dark">Bangkok</h3>
-              <p class="text-dark small-text">Explora la energía de Bangkok, donde la tradición se encuentra con la modernidad.</p>
-              <a href="https://www.skyscanner.es/vuelos-a/bkkt/vuelos-baratos-a-bangkok.html" class="btn btn-dark">Más información</a>
-            </div>
-            <div class="card-footer">
-
-            </div>
+<div class="container text-center mt-5"><h4>DESTINOS MÁS FRECUENTES</h4></div>
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <a href="https://www.skyscanner.es/vuelos-a/bkkt/vuelos-baratos-a-bangkok.html" class="text-decoration-none text-dark">
+        <div class="destination-card" style="background-color: #f0f4f7;">
+          <img src="bangkok.jpg" class="img-fluid" alt="Bangkok Foto">
+          <div class="card-body text-center py-3">
+            <h3 class="text-dark">Bangkok</h3>
+            <p class="text-dark small-text">Explora la energía de Bangkok, donde la tradición se encuentra con la modernidad.</p>
+            <span class="btn btn-dark">Más información</span>
           </div>
         </div>
-        <div class="col-md-6 mb-4">
-          <div class="destination-card" style="background-color: #f0f4f7;">
-            <img src="paris.jpg" class="img-fluid" alt="Paris Foto">
-            <div class="card-body text-center py-3">
-              <h3 class="text-dark">Paris</h3>
-              <p class="text-dark small-text">Vive la magia de París, la ciudad del amor, donde cada rincón cuenta una historia encantadora.</p>
-              <a href="https://www.skyscanner.es/vuelos-a/pari/vuelos-baratos-a-paris.html" class="btn btn-dark">Más información</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 mb-4">
-          <div class="destination-card" style="background-color: #f0f4f7;">
-            <img src="dubai.jpg" class="img-fluid" alt="Dubai Foto">
-            <div class="card-body text-center py-3">
-              <h3 class="text-dark">Dubai</h3>
-              <p class="text-dark small-text">Vive el lujo y la innovación en Dubái, donde el futuro se fusiona con el desierto.</p>
-              <a href="https://www.skyscanner.es/vuelos-a/dxb/vuelos-baratos-a-dubai-aeropuerto.html" class="btn btn-dark">Más información</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 mb-4">
-          <div class="destination-card" style="background-color: #f0f4f7;">
-            <img src="londres.jpg" class="img-fluid" alt="Londres foto">
-            <div class="card-body text-center py-3">
-              <h3 class="text-dark">Londres</h3>
-              <p class="text-dark small-text">Descubre la elegancia e historia en Londres, donde cada rincón cuenta un relato.</p>
-              <a href="https://www.skyscanner.es/vuelos-a/lond/vuelos-baratos-a-londres.html" class="btn btn-dark">Más información</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      </a>
     </div>
+
+    <div class="col-md-6 mb-4">
+      <a href="https://www.skyscanner.es/vuelos-a/pari/vuelos-baratos-a-paris.html" class="text-decoration-none text-dark">
+        <div class="destination-card" style="background-color: #f0f4f7;">
+          <img src="paris.jpg" class="img-fluid" alt="Paris Foto">
+          <div class="card-body text-center py-3">
+            <h3 class="text-dark">Paris</h3>
+            <p class="text-dark small-text">Vive la magia de París, la ciudad del amor, donde cada rincón cuenta una historia encantadora.</p>
+            <span class="btn btn-dark">Más información</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <a href="https://www.skyscanner.es/vuelos-a/dxb/vuelos-baratos-a-dubai-aeropuerto.html" class="text-decoration-none text-dark">
+        <div class="destination-card" style="background-color: #f0f4f7;">
+          <img src="dubai.jpg" class="img-fluid" alt="Dubai Foto">
+          <div class="card-body text-center py-3">
+            <h3 class="text-dark">Dubai</h3>
+            <p class="text-dark small-text">Vive el lujo y la innovación en Dubái, donde el futuro se fusiona con el desierto.</p>
+            <span class="btn btn-dark">Más información</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <a href="https://www.skyscanner.es/vuelos-a/lond/vuelos-baratos-a-londres.html" class="text-decoration-none text-dark">
+        <div class="destination-card" style="background-color: #f0f4f7;">
+          <img src="londres.jpg" class="img-fluid" alt="Londres foto">
+          <div class="card-body text-center py-3">
+            <h3 class="text-dark">Londres</h3>
+            <p class="text-dark small-text">Descubre la elegancia e historia en Londres, donde cada rincón cuenta un relato.</p>
+            <span class="btn btn-dark">Más información</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

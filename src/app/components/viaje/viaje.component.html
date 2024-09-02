@@ -1,66 +1,22 @@
 <div class="margen-navbar"></div>
 
-<div class="row m-3">
-  <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
-    <div class="card bg-light mb-3">
-      <div class="card-header text-center">
-        <h6>Crea un Nuevo Viaje</h6>
+<div class="container mt-4">
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-secondary btn-lg" routerLink="/add-viaje">Crear Viaje</button>
+  </div>
+  <div class="row justify-content-center">
+    @for (viaje of viajes; track viaje) {
+      <div class="col-md-4 mb-4 d-flex align-items-stretch">
+        <a [routerLink]="['/event']" class="destination-card" style="text-decoration: none; color: inherit; background-color: #f0f4f7;">
+          <img src="http://localhost:3000/uploads/vacaciones3.jpg" class="img-fluid" alt="Imagen del viaje">
+          <div class="card-body text-center py-3">
+            <h3 class="text-dark">{{ viaje.titulo }}</h3>
+            <p class="text-dark small-text">Inicio: {{ viaje.fecha_inicio | date:'dd/MM/yyyy' }}</p>
+            <p class="text-dark small-text">Fin: {{ viaje.fecha_fin | date:'dd/MM/yyyy' }}</p>
+            <a routerLink="/event" class="btn btn-dark custom-button mt-auto">Ver detalles</a>
+          </div>
+        </a>
       </div>
-
-      <div class="card-body">
-        <form [formGroup]="viajeForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="titulo">Título *</label>
-            <input type="text" id="titulo" class="form-control" formControlName="titulo" placeholder="Ingrese el título del viaje">
-            @if (viajeForm.get('titulo')?.touched && viajeForm.get('titulo')?.invalid) {
-              <div class="text-danger">El título es requerido.</div>
-            }
-          </div>
-
-          <div class="form-group mt-2">
-            <label for="ubicacion">Ubicación *</label>
-            <input type="text" id="ubicacion" class="form-control" formControlName="ubicacion" placeholder="Ingrese la ubicación del viaje">
-            @if (viajeForm.get('ubicacion')?.touched && viajeForm.get('ubicacion')?.invalid) {
-              <div class="text-danger">La ubicación es requerida.</div>
-            }
-          </div>
-
-          <div class="form-group mt-2">
-            <label for="fecha_inicio">Fecha de Inicio *</label>
-            <input type="date" id="fecha_inicio" class="form-control" formControlName="fecha_inicio">
-            @if (viajeForm.get('fecha_inicio')?.touched && viajeForm.get('fecha_inicio')?.invalid) {
-              <div class="text-danger">La fecha de inicio es requerida.</div>
-            }
-          </div>
-
-          <div class="form-group mt-2">
-            <label for="fecha_fin">Fecha de Fin *</label>
-            <input type="date" id="fecha_fin" class="form-control" formControlName="fecha_fin">
-            @if (viajeForm.get('fecha_fin')?.touched && viajeForm.get('fecha_fin')?.invalid) {
-              <div class="text-danger">La fecha de fin es requerida.</div>
-            }
-          </div>
-
-          <div class="form-group mt-2">
-            <label for="amigos">Selecciona Amigos *</label>
-            <select id="amigos" class="form-control" formControlName="amigos" multiple>
-              @for(amigo of amigos; track amigo){
-                <option [value]="amigo.id_user">{{ amigo.name }} {{ amigo.surname }}</option>
-              }
-            </select>
-            @if (viajeForm.get('amigos')?.touched && viajeForm.get('amigos')?.invalid) {
-              <div class="text-danger">Debes seleccionar al menos un amigo.</div>
-            }
-          </div> 
-
-          <div class="row mt-3">
-            <div class="col text-center">
-              <button type="submit" class="btn btn-success" [disabled]="viajeForm.invalid">Crear Viaje</button>
-              <button routerLink="/" type="button" class="btn btn-secondary mx-2">Volver</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+    }
   </div>
 </div>
