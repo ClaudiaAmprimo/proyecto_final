@@ -5,11 +5,14 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AlertService } from '../../services/alert.service';
 import { AmigoService } from '../../services/amigo.service';
+import { AddFriendComponent } from "../add-friend/add-friend.component";
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-add-edit-viaje',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AddFriendComponent],
   templateUrl: './add-edit-viaje.component.html',
   styleUrl: './add-edit-viaje.component.scss'
 })
@@ -30,6 +33,7 @@ export class AddEditViajeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAmigos();
+    this.initializeModalCloseListener();
   }
 
   loadAmigos() {
@@ -76,6 +80,21 @@ export class AddEditViajeComponent implements OnInit {
           console.error('Error al crear el viaje:', error);
           this.alertService.showAlert('Error al crear el viaje', 'danger');
         }
+      });
+    }
+  }
+
+  openAddFriendModal() {
+    const modalElement = document.getElementById('addFriendModal');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+
+  initializeModalCloseListener() {
+    const modalElement = document.getElementById('addFriendModal');
+    if (modalElement) {
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        this.loadAmigos();
       });
     }
   }

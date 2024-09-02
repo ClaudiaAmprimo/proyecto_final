@@ -56,6 +56,10 @@
             }
           </div>
 
+          <div class="form-group mt-3">
+            <button type="button" class="btn btn-outline-dark btn-sm" (click)="openAddFriendModal()">Agregar Amigos</button>
+          </div>
+
           <div class="row mt-3">
             <div class="col text-center">
               <button type="submit" class="btn btn-success" [disabled]="viajeForm.invalid">Crear Viaje</button>
@@ -66,6 +70,20 @@
             <p class="text-end">* Campos requeridos</p>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addFriendModal" tabindex="-1" aria-labelledby="addFriendModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addFriendModalLabel">Agregar Amigos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <app-add-friend></app-add-friend>
       </div>
     </div>
   </div>
