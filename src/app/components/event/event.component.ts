@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Event } from '../../interfaces/event.ts';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { AlertService } from '../../services/alert.service';
 
@@ -17,10 +17,14 @@ export class EventComponent implements OnInit {
   alertMessage: string | null = null;
   alertType: 'success' | 'danger' | 'warning' = 'success';
   sortAsc: boolean = true;
+  viajeId: number | null = null;
 
-  constructor(private eventService: EventService, private alertService: AlertService) { }
+  constructor(private eventService: EventService, private alertService: AlertService,
+    private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.viajeId = Number(this.route.snapshot.paramMap.get('id_viaje'));
+
     this.getListEvents();
     this.alertService.alertMessage$.subscribe(alert => {
       if (alert) {
@@ -34,6 +38,7 @@ export class EventComponent implements OnInit {
       }
     });
   }
+
   toggleSortOrder() {
     this.sortAsc = !this.sortAsc;
     this.sortEvents();
@@ -50,7 +55,7 @@ export class EventComponent implements OnInit {
   getListEvents() {
     this.eventService.getListEvents().subscribe({
       next: data => {
-        this.listEvents = data;
+        this.listEvents = this.viajeId ? data.filter(event => event.viaje_id === this.viajeId) : data;
         this.sortEvents();
       },
       error: error => {

@@ -142,7 +142,7 @@ export class AddEditEventComponent implements OnInit {
         console.log("evento agregado");
         this.eventForm.reset();
         this.alertService.showAlert('El evento ha sido agregado con éxito', 'success');
-        this.router.navigate(['/event']);
+        this.router.navigate(['/event', event.viaje_id]);
       },
       error: (error) => {
         console.error('Error al agregar evento:', error);
@@ -156,7 +156,7 @@ export class AddEditEventComponent implements OnInit {
         console.log("evento actualizado");
         this.eventForm.reset();
         this.alertService.showAlert('El evento ha sido actualizado con éxito', 'warning');
-        this.router.navigate(['/event']);
+        this.router.navigate(['/event', event.viaje_id]);
       },
       error: (error) => {
         console.error('Error al actualizar el evento:', error);

@@ -74,7 +74,7 @@ export class AddEditViajeComponent implements OnInit {
 
           this.alertService.showAlert('Viaje creado exitosamente', 'success');
           this.viajeForm.reset();
-          this.router.navigate(['/event']);
+          this.router.navigate(['/event', viajeId]);
         },
         error: (error) => {
           console.error('Error al crear el viaje:', error);
