@@ -64,4 +64,8 @@ export class EventService {
   updateEvent(id_event: number, event: Partial<Event>): Observable<void>{
     return this.http.patch<void>(`${this.baseUrl}${this.eventUrl}${id_event}`, event)
   }
+
+  getUserViajes(): Observable<any> {
+    return this.http.get(`${this.baseUrl}viaje`);
+  }
 }

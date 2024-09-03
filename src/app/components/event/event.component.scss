@@ -1,3 +1,7 @@
+.margen-navbar {
+  margin-top: 68px;
+}
+
 .title{
   margin-top: 12px;
   margin-bottom: 12px;
@@ -25,6 +29,20 @@
 
 .table thead th {
   vertical-align: top !important;
+}
+
+.friends-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.friends-container .d-flex {
+  flex-wrap: wrap;
+}
+
+.friend-avatar {
+  margin-bottom: 10px;
 }
 
 @media (max-width: 767px) {
@@ -65,8 +83,7 @@
   .table td:last-child {
     text-align: center;
   }
-}
-
-.margen-navbar {
-  margin-top: 58px;
+  .friend-avatar {
+    margin-bottom: 8px;
+  }
 }

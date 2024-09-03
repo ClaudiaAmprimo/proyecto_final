@@ -20,11 +20,15 @@ export class AmigoService {
     return this.http.post(`${this.baseUrl}`, { amigo_id });
   }
 
-  getFriends(): Observable<User[]> {  
+  getFriends(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}`);
   }
 
   removeFriend(amigo_id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${amigo_id}`);
+  }
+
+  getFriendsByViaje(viajeId: number): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/by-viaje/${viajeId}`);
   }
 }
