@@ -4,7 +4,7 @@
   <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
     <div class="card bg-light mb-3">
       <div class="card-header text-center">
-        <h6>Crea un Nuevo Viaje</h6>
+        <h6>{{operacion}} Viaje</h6>
       </div>
 
       <div class="card-body">
@@ -41,25 +41,10 @@
             }
           </div>
 
-          <!-- <div class="form-group mt-2">
-            <label for="amigos">Selecciona Amigos</label>
-            <select id="amigos" class="form-control" formControlName="amigos" multiple>
-              @if(amigos.length === 0){
-                <option disabled>Para seleccionar amigos debes primero agregar amigos</option>
-              }
-              @for(amigo of amigos; track amigo){
-                <option [value]="amigo.id_user">{{ amigo.name }} {{ amigo.surname }}</option>
-              }
-            </select>
-            @if (viajeForm.get('amigos')?.touched && viajeForm.get('amigos')?.invalid) {
-              <div class="text-danger">Debes seleccionar al menos un amigo.</div>
-            }
-          </div> -->
           <div class="form-group mt-2">
             <label for="amigos">Selecciona Amigos</label>
             <app-seleccionar-amigo (amigosSeleccionados)="onAmigosSeleccionados($event)"></app-seleccionar-amigo>
           </div>
-
 
           <div class="form-group mt-3">
             <button type="button" class="btn btn-outline-dark btn-sm" (click)="openAddFriendModal()">Agregar Amigos</button>
@@ -67,7 +52,7 @@
 
           <div class="row mt-3">
             <div class="col text-center">
-              <button type="submit" class="btn btn-success" [disabled]="viajeForm.invalid">Crear Viaje</button>
+              <button type="submit" class="btn btn-success" [disabled]="viajeForm.invalid">{{operacion}} Viaje</button>
               <button routerLink="/viaje" type="button" class="btn btn-secondary mx-2">Volver</button>
             </div>
           </div>

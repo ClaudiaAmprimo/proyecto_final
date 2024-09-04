@@ -14,6 +14,7 @@
             <p class="text-dark small-text">Inicio: {{ viaje.fecha_inicio | date:'dd/MM/yyyy' }}</p>
             <p class="text-dark small-text">Fin: {{ viaje.fecha_fin | date:'dd/MM/yyyy' }}</p>
             <a [routerLink]="['/event', viaje.id_viaje]" class="btn btn-dark custom-button mt-auto">Ver detalles</a>
+            <a [routerLink]="['/edit-viaje', viaje.id_viaje]" class="btn btn-outline-warning mt-2">Editar Viaje</a>
             <a href="#" (click)="openDeleteModal(viaje.id_viaje); $event.preventDefault();" class="small text-secondary mt-2">Eliminar Viaje</a>
           </div>
         </div>

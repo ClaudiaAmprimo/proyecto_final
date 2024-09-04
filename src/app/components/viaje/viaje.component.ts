@@ -47,9 +47,9 @@ export class ViajeComponent implements OnInit {
       this.viajeService.deleteViaje(this.viajeIdToDelete).subscribe({
         next: () => {
           console.log(`Viaje con ID ${this.viajeIdToDelete} eliminado exitosamente`);
-          this.loadViajes(); // Recarga la lista de viajes después de la eliminación
+          this.loadViajes();
           this.viajeIdToDelete = null;
-          this.router.navigate(['/viaje']); // Asegura que la navegación esté correcta
+          this.router.navigate(['/viaje']); 
         },
         error: (error) => {
           console.error('Error al eliminar el viaje:', error);

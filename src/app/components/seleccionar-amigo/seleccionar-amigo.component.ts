@@ -59,6 +59,6 @@ export class SeleccionarAmigoComponent implements OnInit {
   }
 
   clearSearch() {
-    this.searchControl.setValue(''); 
+    this.searchControl.setValue('');
   }
 }

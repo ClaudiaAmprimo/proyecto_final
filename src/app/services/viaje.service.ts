@@ -21,6 +21,14 @@ export class ViajeService {
     return this.http.post(`${this.baseUrl}viaje`, viajeData);
   }
 
+  updateViaje(id: number, viajeData: any): Observable<any> {
+    return this.http.patch(`${this.baseUrl}viaje/${id}`, viajeData);
+  }
+
+  getViajeById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}viaje/${id}`);
+  }
+
   asociarAmigo(viajeId: number, amigoId: number): Observable<any> {
     return this.http.post(`${this.baseUrl}users-viajes`, { user_id: amigoId, viaje_id: viajeId });
   }

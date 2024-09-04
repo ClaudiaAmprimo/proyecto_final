@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ViajeService } from '../../services/viaje.service';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AlertService } from '../../services/alert.service';
 import { AmigoService } from '../../services/amigo.service';
 import { AddFriendComponent } from "../add-friend/add-friend.component";
 import { SeleccionarAmigoComponent } from "../seleccionar-amigo/seleccionar-amigo.component";
+import { User } from '../../interfaces/user';
 
 declare var bootstrap: any;
 
@@ -19,10 +20,12 @@ declare var bootstrap: any;
 })
 export class AddEditViajeComponent implements OnInit {
   viajeForm: FormGroup;
-  amigos: any[] = [];
+  amigos: User[] = [];
+  viajeId: number | null = null;
+  operacion: string = 'Crear ';
 
   constructor(private viajeService: ViajeService, private router: Router,
-    private alertService: AlertService, private amigoService: AmigoService) {
+    private alertService: AlertService, private amigoService: AmigoService, private route: ActivatedRoute) {
     this.viajeForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
       ubicacion: new FormControl('', Validators.required),
@@ -92,7 +95,6 @@ export class AddEditViajeComponent implements OnInit {
       });
     }
   }
-
 
   openAddFriendModal() {
     const modalElement = document.getElementById('addFriendModal');
