@@ -1,0 +1,25 @@
+<div>
+  <input [formControl]="searchControl" placeholder="Busca amigos" class="form-control mb-3">
+  @if(searchResults.length > 0) {
+    <ul>
+      @for(friend of searchResults; track friend.id_user) {
+        <li>
+          {{ friend.name }} {{ friend.surname }}
+          <button type="button" (click)="addFriend(friend)" class="btn btn-outline-secondary btn-sm custom-button">Agregar</button>
+        </li>
+      }
+    </ul>
+  }
+
+  <h5>Amigos Seleccionados:</h5>
+  @if(selectedFriends.length > 0) {
+    <ul>
+      @for(friend of selectedFriends; track friend.id_user) {
+        <li>
+          {{ friend.name }} {{ friend.surname }}
+          <button type="button" (click)="removeFriend(friend)" class="btn btn-outline-danger btn-sm custom-button">Eliminar</button>
+        </li>
+      }
+    </ul>
+  }
+</div>

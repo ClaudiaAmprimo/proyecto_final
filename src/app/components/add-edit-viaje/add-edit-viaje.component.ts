@@ -6,13 +6,14 @@ import { CommonModule } from '@angular/common';
 import { AlertService } from '../../services/alert.service';
 import { AmigoService } from '../../services/amigo.service';
 import { AddFriendComponent } from "../add-friend/add-friend.component";
+import { SeleccionarAmigoComponent } from "../seleccionar-amigo/seleccionar-amigo.component";
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-add-edit-viaje',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, AddFriendComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AddFriendComponent, SeleccionarAmigoComponent],
   templateUrl: './add-edit-viaje.component.html',
   styleUrl: './add-edit-viaje.component.scss'
 })
@@ -47,6 +48,10 @@ export class AddEditViajeComponent implements OnInit {
     });
   }
 
+  onAmigosSeleccionados(amigosSeleccionados: any[]) {
+    this.viajeForm.get('amigos')?.setValue(amigosSeleccionados.map(a => a.id_user));
+  }
+
   onSubmit(): void {
     if (this.viajeForm.valid) {
       const viajeData = this.viajeForm.value;
@@ -59,22 +64,26 @@ export class AddEditViajeComponent implements OnInit {
           const amigosSeleccionados = this.viajeForm.get('amigos')?.value;
 
           if (amigosSeleccionados && amigosSeleccionados.length > 0) {
-            amigosSeleccionados.forEach((amigoId: number) => {
-              this.viajeService.asociarAmigo(viajeId, amigoId).subscribe({
-                next: () => {
-                  console.log(`Amigo con ID ${amigoId} asociado exitosamente al viaje`);
-                },
-                error: (error) => {
-                  console.error('Error al asociar el amigo al viaje:', error);
-                  this.alertService.showAlert('Error al asociar el amigo al viaje', 'danger');
-                }
+            const asociarAmigosObservables = amigosSeleccionados.map((amigoId: number) =>
+              this.viajeService.asociarAmigo(viajeId, amigoId).toPromise()
+            );
+
+            Promise.all(asociarAmigosObservables)
+              .then(() => {
+                console.log('Todos los amigos asociados exitosamente al viaje');
+                this.alertService.showAlert('Viaje creado y amigos asociados exitosamente', 'success');
+                this.router.navigate(['/event', viajeId]);
+              })
+              .catch((error) => {
+                console.error('Error al asociar algunos amigos al viaje:', error);
+                this.alertService.showAlert('Error al asociar algunos amigos al viaje', 'danger');
               });
-            });
+          } else {
+            this.alertService.showAlert('Viaje creado exitosamente', 'success');
+            this.router.navigate(['/event', viajeId]);
           }
 
-          this.alertService.showAlert('Viaje creado exitosamente', 'success');
           this.viajeForm.reset();
-          this.router.navigate(['/event', viajeId]);
         },
         error: (error) => {
           console.error('Error al crear el viaje:', error);
@@ -83,6 +92,7 @@ export class AddEditViajeComponent implements OnInit {
       });
     }
   }
+
 
   openAddFriendModal() {
     const modalElement = document.getElementById('addFriendModal');
