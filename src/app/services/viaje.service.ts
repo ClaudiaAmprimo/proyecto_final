@@ -24,4 +24,8 @@ export class ViajeService {
   asociarAmigo(viajeId: number, amigoId: number): Observable<any> {
     return this.http.post(`${this.baseUrl}users-viajes`, { user_id: amigoId, viaje_id: viajeId });
   }
+
+  deleteViaje(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}viaje/${id}`);
+  }
 }

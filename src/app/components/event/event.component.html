@@ -77,13 +77,16 @@
     <div class="friends-container mb-3">
       <p>Amigos en este viaje:</p>
       <div class="d-flex flex-wrap">
-        @for (friend of friendsList; track friend) {
-          <div class="friend-avatar me-2 text-center">
-            <img [src]="friend.photoUrl" alt="{{friend.name}}" class="rounded-circle" width="50" height="50">
-          </div>
+        @if (friendsList.length > 0) {
+          @for (friend of friendsList; track friend) {
+            <div class="friend-avatar me-2 text-center">
+              <img [src]="friend.photoUrl" alt="{{friend.name}}" class="rounded-circle" width="50" height="50">
+            </div>
+          }
+        } @else {
+          <small>No tiene amigos seleccionados.</small>
         }
       </div>
     </div>
   }
 </div>
-

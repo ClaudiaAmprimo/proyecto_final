@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ViajeService } from '../../services/viaje.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-viaje',
@@ -13,8 +15,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 })
 export class ViajeComponent implements OnInit {
   viajes: any[] = [];
+  viajeIdToDelete: number | null = null;
 
-  constructor(private viajeService: ViajeService) {}
+  constructor(private viajeService: ViajeService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadViajes();
@@ -30,5 +33,28 @@ export class ViajeComponent implements OnInit {
         console.error('Error al cargar los viajes:', error);
       }
     });
+  }
+
+  openDeleteModal(viajeId: number): void {
+    this.viajeIdToDelete = viajeId;
+    const modalElement = document.getElementById('deleteEventModal');
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  confirmDeleteEvent(): void {
+    if (this.viajeIdToDelete !== null) {
+      this.viajeService.deleteViaje(this.viajeIdToDelete).subscribe({
+        next: () => {
+          console.log(`Viaje con ID ${this.viajeIdToDelete} eliminado exitosamente`);
+          this.loadViajes(); // Recarga la lista de viajes después de la eliminación
+          this.viajeIdToDelete = null;
+          this.router.navigate(['/viaje']); // Asegura que la navegación esté correcta
+        },
+        error: (error) => {
+          console.error('Error al eliminar el viaje:', error);
+        }
+      });
+    }
   }
 }

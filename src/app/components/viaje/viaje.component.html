@@ -7,16 +7,37 @@
   <div class="row justify-content-center">
     @for (viaje of viajes; track viaje) {
       <div class="col-md-4 mb-4 d-flex align-items-stretch">
-        <a [routerLink]="['/event', viaje.id_viaje]" class="destination-card" style="text-decoration: none; color: inherit; background-color: #f0f4f7;">
+        <div class="destination-card" style="text-decoration: none; color: inherit; background-color: #f0f4f7;">
           <img src="http://localhost:3000/uploads/vacaciones3.jpg" class="img-fluid" alt="Imagen del viaje">
           <div class="card-body text-center py-3">
             <h3 class="text-dark">{{ viaje.titulo }}</h3>
             <p class="text-dark small-text">Inicio: {{ viaje.fecha_inicio | date:'dd/MM/yyyy' }}</p>
             <p class="text-dark small-text">Fin: {{ viaje.fecha_fin | date:'dd/MM/yyyy' }}</p>
             <a [routerLink]="['/event', viaje.id_viaje]" class="btn btn-dark custom-button mt-auto">Ver detalles</a>
+            <a href="#" (click)="openDeleteModal(viaje.id_viaje); $event.preventDefault();" class="small text-secondary mt-2">Eliminar Viaje</a>
           </div>
-        </a>
+        </div>
       </div>
     }
+  </div>
+</div>
+
+<div class="modal fade" id="deleteEventModal" tabindex="-1" role="dialog" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteEventModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro que quiere eliminar este evento? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal" (click)="confirmDeleteEvent()">OK</button>
+      </div>
+    </div>
   </div>
 </div>
