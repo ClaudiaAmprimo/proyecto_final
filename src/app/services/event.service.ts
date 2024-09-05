@@ -28,6 +28,18 @@ export class EventService {
     );
   }
 
+  getEventsByViaje(viajeId: number): Observable<Event[]> {
+    return this.http.get<{ data: Event[] }>(`${this.baseUrl}${this.eventUrl}viaje/${viajeId}`).pipe(
+      map(response => response.data.map(event => ({
+        ...event,
+        fecha_inicio: new Date(event.fecha_inicio ?? ''),
+        fecha_fin: new Date(event.fecha_fin ?? ''),
+        created_at: new Date(event.created_at ?? ''),
+        updated_at: new Date(event.updated_at ?? '')
+      })))
+    );
+  }
+
   getCalendarEvents(): Observable<any[]> {
     return this.getListEvents().pipe(
       map(events => events.map(event => ({

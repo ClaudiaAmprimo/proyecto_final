@@ -1,0 +1,18 @@
+<div class="margen-navbar"></div>
+
+@if (!isUserLocationReady) {
+  <app-loading></app-loading>
+} @else {
+  <div class="filter-categories">
+    @for (category of ['Hospedaje', 'Transporte', 'Turismo', 'Comida']; track category) {
+      <label>
+        <input type="checkbox" [value]="category" (change)="onCategorySelectionChange($event)" checked/>
+        {{ category }}
+      </label>
+    }
+  </div>
+
+  <app-map-view></app-map-view>
+  <app-btn-map-location></app-btn-map-location>
+}
+

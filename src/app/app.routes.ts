@@ -5,7 +5,7 @@ import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { FullCalendarComponent } from './components/full-calendar/full-calendar.component';
 import { GraficosComponent } from './components/graficos/graficos.component';
-import { MapaComponent } from './components/mapa/mapa.component';
+import { MapaComponent } from './components/mapa-screen/mapa.component';
 import { RegisterComponent } from './components/register/register.component';
 import { EventComponent } from './components/event/event.component';
 import { ViajeComponent } from './components/viaje/viaje.component';

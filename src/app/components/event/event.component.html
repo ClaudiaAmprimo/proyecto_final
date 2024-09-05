@@ -61,8 +61,8 @@
               <td data-label="Costo">{{event.costo | currency:'EUR':'symbol'}}</td>
               <td data-label="Comentarios">{{event.comentarios}}</td>
               <td>
-                <button routerLink="/edit/{{event.id_event}}" type="button" class="btn btn-success btn-sm me-2">EDIT</button>
-                <button (click)="deleteEvent(event.id_event!)" type="button" class="btn btn-danger btn-sm">DELETE</button>
+                <button routerLink="/edit/{{event.id_event}}" type="button" class="btn btn-outline-success btn-sm me-2">EDIT</button>
+                <button (click)="deleteEvent(event.id_event!)" type="button" class="btn btn-outline-danger btn-sm">DELETE</button>
               </td>
             </tr>
           }
@@ -70,6 +70,10 @@
       </table>
     }
   </div>
+</div>
+
+<div class="container">
+  <app-map-view-event></app-map-view-event>
 </div>
 
 <div class="container">

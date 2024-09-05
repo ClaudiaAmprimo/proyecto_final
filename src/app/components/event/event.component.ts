@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event as CustomEvent } from '../../interfaces/event.ts';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { AlertService } from '../../services/alert.service';
 import { AmigoService } from '../../services/amigo.service.js';
-
+import { MapaComponent } from "../mapa-screen/mapa.component";
+import { MapViewEventComponent } from "../map-view-event/map-view-event.component";
 
 @Component({
   selector: 'app-event',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MapaComponent, MapViewEventComponent],
   templateUrl: './event.component.html',
   styleUrl: './event.component.scss'
 })

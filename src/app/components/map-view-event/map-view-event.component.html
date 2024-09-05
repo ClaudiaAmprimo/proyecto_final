@@ -1,0 +1,15 @@
+<div class="map-container">
+  <div class="filter-container">
+    <div class="filter-options">
+      @for (category of ['Hospedaje', 'Transporte', 'Turismo', 'Comida']; track category) {
+      <label>
+        <input type="checkbox" [value]="category" [checked]="selectedCategories.includes(category)" (change)="onCategorySelectionChange($event)">
+        {{ category }}
+      </label>
+    }
+    </div>
+  </div>
+  <div id="map" class="map-inner-container"></div>
+
+  <app-btn-map-location-event class="btn-map-location"></app-btn-map-location-event>
+</div>
