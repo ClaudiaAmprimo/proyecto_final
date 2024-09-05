@@ -6,6 +6,7 @@ import { MapService } from '../../services/map.service';
 import { EventService } from '../../services/event.service';
 import { Event as CustomEvent } from '../../interfaces/event.ts';
 import { BtnMapLocationEventComponent } from "../btn-map-location-event/btn-map-location-event.component";
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-map-view-event',
@@ -18,15 +19,19 @@ export class MapViewEventComponent implements AfterViewInit {
   events: CustomEvent[] = [];
   filteredEvents: CustomEvent[] = [];
   selectedCategories: string[] = ['Hospedaje', 'Transporte', 'Turismo', 'Comida'];
+  viajeId: number | null = null;
 
   constructor(
     private http: HttpClient,
     private placesService: PlacesService,
     private mapService: MapService,
-    private eventService: EventService
+    private eventService: EventService,
+    private route: ActivatedRoute
   ) {}
 
   ngAfterViewInit(): void {
+    this.viajeId = Number(this.route.snapshot.paramMap.get('id_viaje'));
+
     this.placesService.getUserLocation().then(() => {
       if (!this.placesService.useLocation) {
         console.error("No user location available");
@@ -71,75 +76,75 @@ export class MapViewEventComponent implements AfterViewInit {
     });
   }
 
-  loadEvents() {
-    this.eventService.getListEvents().subscribe(events => {
-      this.events = events;
-      this.applyFilters();
-    });
-  }
+loadEvents() {
+  this.eventService.getListEvents().subscribe(events => {
+    this.events = this.viajeId ? events.filter(event => event.viaje_id === this.viajeId) : events;
+    this.applyFilters();
+  });
+}
 
-  applyFilters() {
-    this.filteredEvents = this.events.filter(event =>
-      this.selectedCategories.includes(event.categoria)
-    );
-    this.addEventMarkers();
-  }
+applyFilters() {
+  this.filteredEvents = this.events.filter(event =>
+    this.selectedCategories.includes(event.categoria)
+  );
+  this.addEventMarkers();
+}
 
-  addEventMarkers() {
-    if (!this.mapService.isMapReady) return;
+addEventMarkers() {
+  if (!this.mapService.isMapReady) return;
 
-    const bounds = new LngLatBounds();
+  const bounds = new LngLatBounds();
 
-    this.filteredEvents.forEach(event => {
-      if (event.ubicacion) {
-        this.mapService.geocodeLocation(event.ubicacion).subscribe({
-          next: ([lng, lat]) => {
-            const popup = new Popup().setHTML(`
-              <h6>${event.titulo}</h6>
-              <span>${event.ubicacion}</span>
-            `);
+  this.filteredEvents.forEach(event => {
+    if (event.ubicacion) {
+      this.mapService.geocodeLocation(event.ubicacion).subscribe({
+        next: ([lng, lat]) => {
+          const popup = new Popup().setHTML(`
+            <h6>${event.titulo}</h6>
+            <span>${event.ubicacion}</span>
+          `);
 
-            const map = this.mapService.getMap();
-            if (map) {
-              new Marker({ color: 'blue' })
-                .setLngLat([lng, lat])
-                .setPopup(popup)
-                .addTo(map);
+          const map = this.mapService.getMap();
+          if (map) {
+            new Marker({ color: 'blue' })
+              .setLngLat([lng, lat])
+              .setPopup(popup)
+              .addTo(map);
 
-              bounds.extend([lng, lat]);
-            }
-          },
-          error: (err) => {
-            console.error(`Invalid coordinates for event ${event.titulo}: ${event.ubicacion}`, err);
-          },
-          complete: () => {
-            const map = this.mapService.getMap();
-            if (map && !bounds.isEmpty()) {
-              map.fitBounds(bounds, { padding: 50 });
-            }
+            bounds.extend([lng, lat]);
           }
-        });
-      }
-    });
-
-    const map = this.mapService.getMap();
-    if (map && !bounds.isEmpty()) {
-      map.fitBounds(bounds, { padding: 50 });
+        },
+        error: (err) => {
+          console.error(`Invalid coordinates for event ${event.titulo}: ${event.ubicacion}`, err);
+        },
+        complete: () => {
+          const map = this.mapService.getMap();
+          if (map && !bounds.isEmpty()) {
+            map.fitBounds(bounds, { padding: 50 });
+          }
+        }
+      });
     }
-  }
+  });
 
-  onCategorySelectionChange(event: any) {
-    const checkbox = event.target as HTMLInputElement;
-    if (checkbox.checked) {
-      this.selectedCategories.push(checkbox.value);
-    } else {
-      this.selectedCategories = this.selectedCategories.filter(cat => cat !== checkbox.value);
-    }
-    this.applyFilters();
+  const map = this.mapService.getMap();
+  if (map && !bounds.isEmpty()) {
+    map.fitBounds(bounds, { padding: 50 });
   }
+}
 
-  onCategoryChange(selectedCategories: string[]) {
-    this.selectedCategories = selectedCategories;
-    this.applyFilters();
+onCategorySelectionChange(event: any) {
+  const checkbox = event.target as HTMLInputElement;
+  if (checkbox.checked) {
+    this.selectedCategories.push(checkbox.value);
+  } else {
+    this.selectedCategories = this.selectedCategories.filter(cat => cat !== checkbox.value);
   }
+  this.applyFilters();
+}
+
+onCategoryChange(selectedCategories: string[]) {
+  this.selectedCategories = selectedCategories;
+  this.applyFilters();
+}
 }
