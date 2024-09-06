@@ -36,6 +36,16 @@ export class AddEditViajeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.viajeId = Number(id);
+        this.operacion = 'Editar';
+        this.loadViaje();
+      } else {
+        this.operacion = 'Crear';
+      }
+    });
     this.loadAmigos();
     this.initializeModalCloseListener();
   }
@@ -59,40 +69,54 @@ export class AddEditViajeComponent implements OnInit {
     if (this.viajeForm.valid) {
       const viajeData = this.viajeForm.value;
 
-      this.viajeService.createViaje(viajeData).subscribe({
-        next: (response) => {
-          console.log('Viaje creado exitosamente', response);
-
-          const viajeId = response.data.id_viaje;
-          const amigosSeleccionados = this.viajeForm.get('amigos')?.value;
-
-          if (amigosSeleccionados && amigosSeleccionados.length > 0) {
-            const asociarAmigosObservables = amigosSeleccionados.map((amigoId: number) =>
-              this.viajeService.asociarAmigo(viajeId, amigoId).toPromise()
-            );
-
-            Promise.all(asociarAmigosObservables)
-              .then(() => {
-                console.log('Todos los amigos asociados exitosamente al viaje');
-                this.alertService.showAlert('Viaje creado y amigos asociados exitosamente', 'success');
-                this.router.navigate(['/event', viajeId]);
-              })
-              .catch((error) => {
-                console.error('Error al asociar algunos amigos al viaje:', error);
-                this.alertService.showAlert('Error al asociar algunos amigos al viaje', 'danger');
-              });
-          } else {
-            this.alertService.showAlert('Viaje creado exitosamente', 'success');
-            this.router.navigate(['/event', viajeId]);
+      if (this.viajeId) {
+        this.viajeService.updateViaje(this.viajeId, viajeData).subscribe({
+          next: () => {
+            console.log('Viaje actualizado exitosamente');
+            this.alertService.showAlert('Viaje actualizado exitosamente', 'success');
+            this.router.navigate(['/viaje']);
+          },
+          error: (error) => {
+            console.error('Error al actualizar el viaje:', error);
+            this.alertService.showAlert('Error al actualizar el viaje', 'danger');
           }
+        });
+      } else {
+        this.viajeService.createViaje(viajeData).subscribe({
+          next: (response) => {
+            console.log('Viaje creado exitosamente', response);
 
-          this.viajeForm.reset();
-        },
-        error: (error) => {
-          console.error('Error al crear el viaje:', error);
-          this.alertService.showAlert('Error al crear el viaje', 'danger');
-        }
-      });
+            const viajeId = response.data.id_viaje;
+            const amigosSeleccionados = this.viajeForm.get('amigos')?.value;
+
+            if (amigosSeleccionados && amigosSeleccionados.length > 0) {
+              const asociarAmigosObservables = amigosSeleccionados.map((amigoId: number) =>
+                this.viajeService.asociarAmigo(viajeId, amigoId).toPromise()
+              );
+
+              Promise.all(asociarAmigosObservables)
+                .then(() => {
+                  console.log('Todos los amigos asociados exitosamente al viaje');
+                  this.alertService.showAlert('Viaje creado y amigos asociados exitosamente', 'success');
+                  this.router.navigate(['/event', viajeId]);
+                })
+                .catch((error) => {
+                  console.error('Error al asociar algunos amigos al viaje:', error);
+                  this.alertService.showAlert('Error al asociar algunos amigos al viaje', 'danger');
+                });
+            } else {
+              this.alertService.showAlert('Viaje creado exitosamente', 'success');
+              this.router.navigate(['/event', viajeId]);
+            }
+
+            this.viajeForm.reset();
+          },
+          error: (error) => {
+            console.error('Error al crear el viaje:', error);
+            this.alertService.showAlert('Error al crear el viaje', 'danger');
+          }
+        });
+      }
     }
   }
 
@@ -109,5 +133,40 @@ export class AddEditViajeComponent implements OnInit {
         this.loadAmigos();
       });
     }
+  }
+
+  loadViaje(): void {
+    if (!this.viajeId) return;
+
+    this.viajeService.getViajeById(this.viajeId).subscribe({
+      next: (response) => {
+        const viaje = response.data;
+
+        const fechaInicio = this.formatDate(viaje.fecha_inicio);
+        const fechaFin = this.formatDate(viaje.fecha_fin);
+
+        const amigosIds = viaje.Users ? viaje.Users.map((user: any) => user.id_user) : [];
+
+        this.viajeForm.patchValue({
+          titulo: viaje.titulo,
+          ubicacion: viaje.ubicacion,
+          fecha_inicio: fechaInicio,
+          fecha_fin: fechaFin,
+          amigos: amigosIds
+        });
+      },
+      error: (error) => {
+        console.error('Error al cargar los datos del viaje:', error);
+        this.alertService.showAlert('Error al cargar los datos del viaje', 'danger');
+      }
+    });
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
   }
 }
