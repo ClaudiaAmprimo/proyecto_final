@@ -43,7 +43,12 @@
 
           <div class="form-group mt-2">
             <label for="amigos">Selecciona Amigos</label>
-            <app-seleccionar-amigo (amigosSeleccionados)="onAmigosSeleccionados($event)"></app-seleccionar-amigo>
+            <app-seleccionar-amigo
+              [selectedFriends]="selectedAmigos"
+              (amigosSeleccionados)="onAmigosSeleccionados($event)">
+            </app-seleccionar-amigo>
+
+
           </div>
 
           <div class="form-group mt-3">

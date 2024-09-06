@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AmigoService } from '../../services/amigo.service';
@@ -13,14 +13,15 @@ import { User } from '../../interfaces/user';
   styleUrl: './seleccionar-amigo.component.scss'
 })
 export class SeleccionarAmigoComponent implements OnInit {
+  @Input() selectedFriends: User[] = [];
   searchControl = new FormControl('');
   searchResults: User[] = [];
-  selectedFriends: User[] = [];
   @Output() amigosSeleccionados = new EventEmitter<User[]>();
 
   constructor(private amigoService: AmigoService) { }
 
   ngOnInit() {
+    this.emitSelectedFriends();
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       switchMap(query => {
