@@ -31,7 +31,10 @@ export class SeleccionarAmigoComponent implements OnInit {
         } else {
           return this.amigoService.getFriends().pipe(
             switchMap(friends => {
-              const filteredFriends = friends.filter(friend => friend.name.toLowerCase().includes(query.toLowerCase()));
+              const filteredFriends = friends.filter(friend =>
+                friend.name.toLowerCase().includes(query.toLowerCase()) &&
+                !this.selectedFriends.some(selected => selected.id_user === friend.id_user)
+              );
               return of(filteredFriends);
             })
           );

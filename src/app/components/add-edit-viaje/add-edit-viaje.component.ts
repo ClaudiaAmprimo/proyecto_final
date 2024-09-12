@@ -42,24 +42,62 @@ export class AddEditViajeComponent implements OnInit {
       if (id) {
         this.viajeId = Number(id);
         this.operacion = 'Editar';
-        this.loadViaje();
+
+        this.loadAmigos(() => this.loadViaje());
       } else {
         this.operacion = 'Crear';
+        this.loadAmigos();
       }
     });
-    this.loadAmigos();
     this.initializeModalCloseListener();
   }
 
-  loadAmigos() {
+  loadAmigos(callback?: Function) {
     this.amigoService.getFriends().subscribe({
       next: (response) => {
         this.amigos = response;
         console.log('Lista completa de amigos:', this.amigos);
-        this.updateSelectedFriends();
+
+        if (callback) callback();
       },
       error: (error) => {
         console.error('Error al obtener la lista de amigos:', error);
+      }
+    });
+  }
+
+  loadViaje(): void {
+    if (!this.viajeId) return;
+
+    const currentUserId = this.getCurrentUserId();
+
+    this.viajeService.getViajeById(this.viajeId).subscribe({
+      next: (response) => {
+        const viaje = response.data;
+
+        const fechaInicio = this.formatDate(viaje.fecha_inicio);
+        const fechaFin = this.formatDate(viaje.fecha_fin);
+        const amigosFiltrados = viaje.Users
+          ? viaje.Users.filter((user: any) => user.id_user !== currentUserId)
+          : [];
+        console.log('Amigos filtrados sin el usuario actual:', amigosFiltrados);
+
+        this.viajeForm.patchValue({
+          titulo: viaje.titulo,
+          ubicacion: viaje.ubicacion,
+          fecha_inicio: fechaInicio,
+          fecha_fin: fechaFin,
+          amigos: amigosFiltrados.map((user: any) => user.id_user)
+        });
+
+        this.selectedAmigos = amigosFiltrados;
+        console.log('Amigos seleccionados cargados del viaje:', this.selectedAmigos);
+
+        this.updateSelectedFriends();
+      },
+      error: (error) => {
+        console.error('Error al cargar los datos del viaje:', error);
+        this.alertService.showAlert('Error al cargar los datos del viaje', 'danger');
       }
     });
   }
@@ -73,13 +111,14 @@ export class AddEditViajeComponent implements OnInit {
   onSubmit(): void {
     if (this.viajeForm.valid) {
       const viajeData = this.viajeForm.value;
+      console.log('Datos del viaje antes de enviar:', viajeData);
 
       if (this.viajeId) {
         this.viajeService.updateViaje(this.viajeId, viajeData).subscribe({
           next: () => {
             console.log('Viaje actualizado exitosamente');
             this.alertService.showAlert('Viaje actualizado exitosamente', 'success');
-            this.router.navigate(['/viaje']);
+            this.router.navigate(['/event', this.viajeId]);
           },
           error: (error) => {
             console.error('Error al actualizar el viaje:', error);
@@ -140,45 +179,12 @@ export class AddEditViajeComponent implements OnInit {
     }
   }
 
-  loadViaje(): void {
-    if (!this.viajeId) return;
-
-    const currentUserId = this.getCurrentUserId();
-
-    this.viajeService.getViajeById(this.viajeId).subscribe({
-      next: (response) => {
-        const viaje = response.data;
-
-        const fechaInicio = this.formatDate(viaje.fecha_inicio);
-        const fechaFin = this.formatDate(viaje.fecha_fin);
-
-        const amigosIds = viaje.Users ? viaje.Users.map((user: any) => user.id_user) : [];
-        console.log('IDs de amigos en el viaje cargado:', amigosIds);
-
-        const amigosFiltrados = viaje.Users ? viaje.Users.filter((user: any) => user.id_user !== currentUserId) : [];
-        console.log('Amigos filtrados sin el usuario actual:', amigosFiltrados);
-
-        this.viajeForm.patchValue({
-          titulo: viaje.titulo,
-          ubicacion: viaje.ubicacion,
-          fecha_inicio: fechaInicio,
-          fecha_fin: fechaFin,
-          amigos: amigosFiltrados.map((user: any) => user.id_user)
-        });
-        this.selectedAmigos = amigosFiltrados;
-        console.log('Amigos seleccionados cargados del viaje:', this.selectedAmigos);
-        this.updateSelectedFriends(); 
-      },
-      error: (error) => {
-        console.error('Error al cargar los datos del viaje:', error);
-        this.alertService.showAlert('Error al cargar los datos del viaje', 'danger');
-      }
-    });
-  }
-
   updateSelectedFriends() {
     if (this.selectedAmigos.length) {
-      const amigosSeleccionados = this.amigos.filter(amigo => this.selectedAmigos.some(selected => selected.id_user === amigo.id_user));
+
+      const amigosSeleccionados = this.amigos.filter(amigo =>
+        this.selectedAmigos.some(selected => selected.id_user === amigo.id_user)
+      );
       console.log('Amigos seleccionados después de filtrar:', amigosSeleccionados);
       this.onAmigosSeleccionados(amigosSeleccionados);
     }
