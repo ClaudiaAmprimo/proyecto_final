@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Event as CustomEvent } from '../../interfaces/event.ts';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { AlertService } from '../../services/alert.service';
 import { AmigoService } from '../../services/amigo.service.js';
@@ -24,12 +24,15 @@ export class EventComponent implements OnInit {
   filteredEvents: CustomEvent[] = [];
   viajes: any[] = [];
   friendsList: any[] = [];
+  viajeTitulo: string = '';
 
   constructor(private eventService: EventService, private alertService: AlertService,
-    private route: ActivatedRoute, private amigoService: AmigoService) { }
+    private route: ActivatedRoute, private amigoService: AmigoService, private router: Router) { }
 
   ngOnInit(): void {
     this.viajeId = Number(this.route.snapshot.paramMap.get('id_viaje'));
+    const state = history.state as { viajeTitulo: string };
+    this.viajeTitulo = state?.viajeTitulo || 'Itinerario de Viaje';
 
     this.getListEvents();
     this.loadViajes();
