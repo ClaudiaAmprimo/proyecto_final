@@ -1,2 +1,137 @@
+<!-- <div class="margen-navbar"></div>
+
+<div class="container mt-2">
+  <full-calendar [options]="calendarOptions"></full-calendar>
+</div>
+
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editEventModalLabel">Editar Evento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editEventForm" (submit)="onSubmit()">
+          <div class="form-group">
+            <label for="titulo">Título *</label>
+            <input type="text" id="titulo" class="form-control" formControlName="titulo" placeholder="Introduce el título">
+          </div>
+          <div class="form-group mt-2">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" class="form-control" formControlName="categoria">
+              <option value="Hospedaje">Hospedaje</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Turismo">Turismo</option>
+              <option value="Comida">Comida</option>
+            </select>
+          </div>
+          <div class="form-group mt-2">
+            <label for="ubicacion">Ubicación *</label>
+            <input type="text" id="ubicacion" class="form-control" formControlName="ubicacion" placeholder="Ingrese la ubicación">
+          </div>
+          <div class="form-group mt-2">
+            <label class="mx-2" for="fechaInicio">Fecha de Inicio *</label>
+            <input type="datetime-local" name="fechaInicio" formControlName="fechaInicio" placeholder="Ingrese la fecha de inicio">
+          </div>
+          <div class="form-group mt-2">
+            <label class="mx-2" for="fechaFin">Fecha de Fin *</label>
+            <input type="datetime-local" name="fechaFin" formControlName="fechaFin" placeholder="Ingrese la fecha de fin">
+          </div>
+          <div class="form-group mt-2">
+            <label for="costo">Costo *</label>
+            <input type="number" id="costo" class="form-control" formControlName="costo" placeholder="Ingrese el costo">
+          </div>
+          <div class="form-group mt-2">
+            <label for="comentarios">Comentarios</label>
+            <input type="text" id="comentarios" class="form-control" formControlName="comentarios" placeholder="Ingrese comentarios">
+          </div>
+          <div class="form-group mt-2">
+            <label for="viaje">Viaje *</label>
+            <select id="viaje" class="form-control" formControlName="viajeId">
+              <option *ngFor="let viaje of viajes" [value]="viaje.id_viaje">{{ viaje.titulo }}</option>
+            </select>
+          </div>
+          <div class="row mt-2">
+            <div class="col text-center">
+              <button [disabled]="editEventForm.invalid" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
+              <button type="button" class="btn btn-outline-secondary mx-2 custom-button" data-bs-dismiss="modal">Volver</button>
+              <button type="button" class="btn btn-outline-danger mx-2 custom-button" (click)="deleteEvent()">Eliminar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->
+
 <div class="margen-navbar"></div>
-<p>full-calendar works!</p>
+
+<div class="container mt-2">
+  <full-calendar [options]="calendarOptions"></full-calendar>
+</div>
+
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editEventModalLabel">{{operacion}}  Evento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editEventForm" (submit)="onSubmit()">
+          <div class="form-group">
+            <label for="titulo">Título *</label>
+            <input type="text" id="titulo" class="form-control" formControlName="titulo" placeholder="Introduce el título">
+          </div>
+          <div class="form-group mt-2">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" class="form-control" formControlName="categoria">
+              <option value="Hospedaje">Hospedaje</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Turismo">Turismo</option>
+              <option value="Comida">Comida</option>
+            </select>
+          </div>
+          <div class="form-group mt-2">
+            <label for="ubicacion">Ubicación *</label>
+            <input type="text" id="ubicacion" class="form-control" formControlName="ubicacion" placeholder="Ingrese la ubicación">
+          </div>
+          <div class="form-group mt-2">
+            <label class="mx-2" for="fechaInicio">Fecha de Inicio *</label>
+            <input type="datetime-local" name="fechaInicio" formControlName="fechaInicio" placeholder="Ingrese la fecha de inicio">
+          </div>
+          <div class="form-group mt-2">
+            <label class="mx-2" for="fechaFin">Fecha de Fin *</label>
+            <input type="datetime-local" name="fechaFin" formControlName="fechaFin" placeholder="Ingrese la fecha de fin">
+          </div>
+          <div class="form-group mt-2">
+            <label for="costo">Costo *</label>
+            <input type="number" id="costo" class="form-control" formControlName="costo" placeholder="Ingrese el costo">
+          </div>
+          <div class="form-group mt-2">
+            <label for="comentarios">Comentarios</label>
+            <input type="text" id="comentarios" class="form-control" formControlName="comentarios" placeholder="Ingrese comentarios">
+          </div>
+          <div class="form-group mt-2">
+            <label for="viaje">Viaje *</label>
+            <select id="viaje" class="form-control" formControlName="viajeId">
+              @for (viaje of viajes; track viaje) {
+                <option [value]="viaje.id_viaje">{{ viaje.titulo }}</option>
+              }
+            </select>
+          </div>
+          <div class="row mt-2">
+            <div class="col text-center">
+              <button [disabled]="editEventForm.invalid" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
+              <button type="button" class="btn btn-outline-secondary mx-2 custom-button" data-bs-dismiss="modal">Volver</button>
+              @if (selectedEventId) {
+                <button type="button" class="btn btn-outline-danger mx-2 custom-button" (click)="deleteEvent()">Eliminar</button>
+              }
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

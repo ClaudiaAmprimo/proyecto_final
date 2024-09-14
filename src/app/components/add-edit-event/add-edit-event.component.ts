@@ -137,7 +137,7 @@ export class AddEditEventComponent implements OnInit {
   }
 
   addEvent(event: Event) {
-    this.eventService.saveEvent(event).subscribe({
+    this.eventService.createEvent(event).subscribe({
       next: () => {
         console.log("evento agregado");
         this.eventForm.reset();

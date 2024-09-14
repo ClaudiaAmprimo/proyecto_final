@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subject } from 'rxjs';
 import { Event } from '../interfaces/event.ts';
 
 @Injectable({
@@ -11,9 +11,16 @@ export class EventService {
   private baseUrl: string;
   private eventUrl: string;
 
+  private eventChangeSubject = new Subject<void>();
+  eventChanges$ = this.eventChangeSubject.asObservable();
+
   constructor(private http: HttpClient){
     this.baseUrl = environment.endpoint;
     this.eventUrl = 'event/'
+  }
+
+  notifyEventChanges() {
+    this.eventChangeSubject.next();
   }
 
   getListEvents(): Observable<Event[]> {
@@ -50,12 +57,20 @@ export class EventService {
     );
   }
 
-  deleteEvent(id_event: number): Observable<void>{
-    return this.http.delete<void>(`${this.baseUrl}${this.eventUrl}${id_event}`)
+  deleteEvent(id_event: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}${this.eventUrl}${id_event}`).pipe(
+      map(() => {
+        this.notifyEventChanges();
+      })
+    );
   }
 
-  saveEvent(event: Event): Observable<void>{
-    return this.http.post<void>(`${this.baseUrl}${this.eventUrl}`, event)
+  createEvent(event: Event): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}${this.eventUrl}`, event).pipe(
+      map(() => {
+        this.notifyEventChanges();
+      })
+    );
   }
 
   getEvent(id_event: number): Observable<Event>{
@@ -73,8 +88,12 @@ export class EventService {
     );
   }
 
-  updateEvent(id_event: number, event: Partial<Event>): Observable<void>{
-    return this.http.patch<void>(`${this.baseUrl}${this.eventUrl}${id_event}`, event)
+  updateEvent(id_event: number, event: Partial<Event>): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}${this.eventUrl}${id_event}`, event).pipe(
+      map(() => {
+        this.notifyEventChanges();
+      })
+    );
   }
 
   getUserViajes(): Observable<any> {

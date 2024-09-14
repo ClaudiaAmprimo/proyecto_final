@@ -7,11 +7,12 @@ import { AlertService } from '../../services/alert.service';
 import { AmigoService } from '../../services/amigo.service.js';
 import { MapaComponent } from "../mapa-screen/mapa.component";
 import { MapViewEventComponent } from "../map-view-event/map-view-event.component";
+import { FullCalendarComponent } from "../full-calendar/full-calendar.component";
 
 @Component({
   selector: 'app-event',
   standalone: true,
-  imports: [CommonModule, RouterLink, MapaComponent, MapViewEventComponent],
+  imports: [CommonModule, RouterLink, MapaComponent, MapViewEventComponent, FullCalendarComponent],
   templateUrl: './event.component.html',
   styleUrl: './event.component.scss'
 })
@@ -40,6 +41,10 @@ export class EventComponent implements OnInit {
     if (this.viajeId) {
       this.loadFriendsByViaje(this.viajeId);
     }
+
+    this.eventService.eventChanges$.subscribe(() => {
+      this.getListEvents(); 
+    });
 
     this.alertService.alertMessage$.subscribe(alert => {
       if (alert) {

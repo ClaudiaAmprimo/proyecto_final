@@ -1,4 +1,73 @@
-
 .margen-navbar {
-  margin-top: 58px;
+  margin-top: 68px;
+}
+
+::ng-deep .fc a {
+  color: white !important;
+  text-decoration: none !important;
+}
+
+::ng-deep .fc .fc-col-header-cell.fc-day {
+  background-color: #4a5759 !important;
+}
+
+::ng-deep .fc-button {
+  background-color: #dedbd2 !important;
+  border-color: #4a5759 !important;
+  color: black !important;
+}
+
+::ng-deep .fc-button:hover {
+  background-color: #4a5759 !important;
+  border-color: #4a5759 !important;
+  color: white !important;
+}
+
+::ng-deep .fc {
+  height: auto !important;
+}
+
+::ng-deep .fc-toolbar-title {
+  font-size: 16px !important;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+
+::ng-deep .fc .fc-daygrid-day-top {
+  font-size: 14px !important;
+}
+
+::ng-deep .fc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+::ng-deep .fc-toolbar-chunk {
+  flex: 1;
+}
+
+.custom-button {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 80px;
+  margin: 8px;
+}
+
+
+@media (max-width: 768px) {
+  ::ng-deep .fc-toolbar-title {
+    font-size: 14px !important;
+  }
+
+  ::ng-deep .fc-toolbar-chunk {
+    text-align: center;
+  }
+
+  ::ng-deep .fc-button {
+    font-size: 12px !important;
+  }
 }
