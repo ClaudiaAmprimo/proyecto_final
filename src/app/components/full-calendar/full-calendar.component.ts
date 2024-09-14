@@ -33,6 +33,8 @@ export class FullCalendarComponent implements OnInit {
     slotMinTime: '00:00:00',
     slotMaxTime: '24:00:00',
     timeZone: 'local',
+    height: 'auto',
+    contentHeight: 'auto',
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -48,6 +50,16 @@ export class FullCalendarComponent implements OnInit {
       timeGridWeek: {
         titleFormat: { year: 'numeric', month: 'short', day: 'numeric' },
       },
+    },
+    slotLabelFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    },
+    eventTimeFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
     },
     eventClick: this.handleEventClick.bind(this),
     eventDrop: this.handleEventDrop.bind(this),
@@ -167,19 +179,30 @@ export class FullCalendarComponent implements OnInit {
 
   deleteEvent() {
     if (this.selectedEventId) {
-      if (confirm('¿Estás seguro de que deseas eliminar este evento?')) {
-        this.eventService.deleteEvent(this.selectedEventId).subscribe({
-          next: () => {
-            const modalElement = document.getElementById('editEventModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement!);
-            modalInstance?.hide();
-            this.loadEvents();
-          },
-          error: (error) => {
-            console.error('Error al eliminar el evento:', error);
-          }
-        });
-      }
+      const editModalElement = document.getElementById('editEventModal');
+      const editModalInstance = bootstrap.Modal.getInstance(editModalElement!);
+      editModalInstance?.hide();
+
+      const modalElement = document.getElementById('confirmDeleteModal');
+      const modalInstance = new bootstrap.Modal(modalElement!);
+      modalInstance.show();
+    }
+  }
+
+  confirmDeleteEvent() {
+    if (this.selectedEventId) {
+      this.eventService.deleteEvent(this.selectedEventId).subscribe({
+        next: () => {
+          const modalElement = document.getElementById('confirmDeleteModal');
+          const modalInstance = bootstrap.Modal.getInstance(modalElement!);
+          modalInstance?.hide();
+
+          this.loadEvents(); 
+        },
+        error: (error) => {
+          console.error('Error al eliminar el evento:', error);
+        }
+      });
     }
   }
 
@@ -259,6 +282,6 @@ export class FullCalendarComponent implements OnInit {
     modalInstance?.hide();
     this.isEditing = false;
     this.selectedEventId = 0;
-    this.operacion = 'Agregar '; 
+    this.operacion = 'Agregar ';
   }
 }
