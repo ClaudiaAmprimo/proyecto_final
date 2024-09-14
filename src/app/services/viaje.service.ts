@@ -36,4 +36,8 @@ export class ViajeService {
   deleteViaje(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}viaje/${id}`);
   }
+
+  getFriendsByViaje(viajeId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/friends/by-viaje/${viajeId}`);
+  }
 }

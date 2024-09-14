@@ -1,4 +1,5 @@
 <div class="margen-navbar"></div>
+
 <div class="row m-3">
   <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
     <div class="card bg-light mb-3">
@@ -52,8 +53,25 @@
             <label for="costo">Costo *</label>
             <input type="number" id="costo" class="form-control" formControlName="costo" placeholder="Ingrese el costo">
             @if (costo.hasError('required') && costo.touched){
-              <p class="form-error">El costo es requerida</p>
+              <p class="form-error">El costo es requerido</p>
             }
+          </div>
+          <div class="form-group mt-2">
+            <label for="user_id_paid">Pagado por *</label>
+            <select id="user_id_paid" class="form-control" formControlName="user_id_paid">
+              <option value="" disabled selected>Seleccione quién pagó</option>
+              @for (friend of friendsList; track friend) {
+                <option [value]="friend.id_user">
+                  {{ friend.name }} {{ friend.surname }}
+                </option>
+              }
+            </select>
+          </div>
+          <div class="form-group mt-2">
+            <button type="button" class="btn btn-secondary" (click)="openFriendSelectionModal()">Seleccionar distribución de costos</button>
+          </div>
+          <div class="form-group mt-2">
+            <input type="hidden" formControlName="cost_distribution">
           </div>
           <div class="form-group mt-2">
             <label for="comentarios">Comentarios</label>
@@ -61,7 +79,7 @@
           </div>
           <div class="form-group mt-2">
             <label for="viaje">Viaje *</label>
-            <select id="viaje" class="form-control" formControlName="viajeId">
+            <select id="viaje" class="form-control" formControlName="viajeId" (change)="onViajeSelected($event)">
               <option value="" disabled selected>Seleccione un viaje</option>
               @for (viaje of viajes; track viaje) {
                 <option [value]="viaje.id_viaje">{{ viaje.titulo }}</option>
@@ -82,6 +100,38 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="cost-distribution-modal" class="modal">
+  <div class="modal-content">
+    <h5>Distribuir Costo</h5>
+    <div class="form-group mt-2">
+      <label for="payer">¿Quién pagó?</label>
+      <select id="payer" [(ngModel)]="selectedPayer" class="form-control">
+        @for (friend of friendsList; track friend) {
+          <option [value]="friend.id_user">
+            {{ friend.name }} {{ friend.surname }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group mt-2">
+      <label>¿Cómo se divide el costo?</label>
+      @for (friend of selectedFriendsForDistribution; track friend.user_id) {
+        <div class="d-flex align-items-center">
+          <span>{{ friend.name }} {{ friend.surname }}</span>
+          <input type="number" [(ngModel)]="friend.amount" class="form-control mx-2" placeholder="Monto">
+        </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="onFriendsSelected(selectedFriendsForDistribution)">Confirmar</button>
+      <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
     </div>
   </div>
 </div>

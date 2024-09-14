@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { format } from 'date-fns';
 import { EventService } from '../../services/event.service';
-import { Event } from '../../interfaces/event.ts';
+import { CostDistribution, Event } from '../../interfaces/event.ts';
 import { ViajeService } from '../../services/viaje.service';
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../services/alert.service';
+import { CommonModule } from '@angular/common';
+import { AmigoService } from '../../services/amigo.service';
 
 @Component({
   selector: 'app-add-edit-event',
@@ -14,12 +16,16 @@ import { AlertService } from '../../services/alert.service';
   imports: [
     RouterLink,
     ReactiveFormsModule,
+    FormsModule,
+    CommonModule
   ],
   templateUrl: './add-edit-event.component.html',
   styleUrl: './add-edit-event.component.scss'
 })
 export class AddEditEventComponent implements OnInit {
   eventForm: FormGroup;
+  user_id_paid: FormControl;
+  cost_distribution: FormControl;
   titulo: FormControl;
   categoria: FormControl;
   ubicacion: FormControl;
@@ -29,14 +35,17 @@ export class AddEditEventComponent implements OnInit {
   comentarios: FormControl;
   viaje: FormControl;
   viajes: any[] = [];
+  friendsList: any[] = [];
   eventAddedSuccess: boolean = false;
   eventUpdatedSuccess: boolean = false;
   id_event: number;
-  operacion: string = 'Agregar '
+  operacion: string = 'Agregar ';
+  selectedFriendsForDistribution: CostDistribution[] = [];
+  selectedPayer: number | null = null;
 
   constructor(private eventService: EventService, private viajeService: ViajeService,
     private authService: AuthService, private route: ActivatedRoute, private router: Router,
-    private alertService: AlertService ){
+    private alertService: AlertService, private amigoService: AmigoService ){
     this.titulo = new FormControl('', Validators.required);
     this.categoria = new FormControl('', Validators.required);
     this.ubicacion = new FormControl('', Validators.required);
@@ -45,6 +54,8 @@ export class AddEditEventComponent implements OnInit {
     this.costo = new FormControl('', Validators.required);
     this.comentarios = new FormControl('');
     this.viaje = new FormControl('', Validators.required);
+    this.user_id_paid = new FormControl('', Validators.required);
+    this.cost_distribution = new FormControl('', Validators.required);
 
     this.eventForm = new FormGroup({
       titulo: this.titulo,
@@ -54,7 +65,9 @@ export class AddEditEventComponent implements OnInit {
       fechaFin: this.fechaFin,
       costo: this.costo,
       comentarios: this.comentarios,
-      viajeId: this.viaje
+      viajeId: this.viaje,
+      user_id_paid: this.user_id_paid,
+      cost_distribution: this.cost_distribution
     })
 
   this.id_event = Number(route.snapshot.paramMap.get('id'));
@@ -78,6 +91,58 @@ export class AddEditEventComponent implements OnInit {
         console.error('Error al obtener los viajes:', error);
       }
     });
+  }
+
+  loadFriends(viajeId: number) {
+    if (viajeId) {
+      this.amigoService.getFriendsByViaje(viajeId).subscribe({
+        next: (response: any) => {
+          this.friendsList = response;
+          console.log('Amigos cargados:', this.friendsList);
+
+          this.selectedFriendsForDistribution = this.friendsList.map(friend => {
+            return {
+              user_id: friend.id_user,
+              amount: 0,
+              name: friend.name,
+              surname: friend.surname
+            };
+          });
+
+          console.log('Distribución de costos actualizada:', this.selectedFriendsForDistribution);
+        },
+        error: (error: any) => {
+          console.error('Error al obtener los amigos:', error);
+        }
+      });
+    }
+  }
+
+  onViajeSelected(event: any) {
+    const selectedViajeId = event.target.value;
+    if (selectedViajeId) {
+      this.loadFriends(selectedViajeId);
+    }
+  }
+
+  openFriendSelectionModal() {
+    const modal = document.getElementById('cost-distribution-modal');
+    if (modal) {
+      modal.style.display = 'block';
+    }
+  }
+
+  onFriendsSelected(selectedDistribution: CostDistribution[]) {
+    this.selectedFriendsForDistribution = selectedDistribution;
+    this.eventForm.controls['cost_distribution'].setValue(this.selectedFriendsForDistribution);
+    this.closeModal();
+  }
+
+  closeModal() {
+    const modal = document.getElementById('cost-distribution-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
   }
 
   formatDateTime(dateTime: string): string {
@@ -124,7 +189,9 @@ export class AddEditEventComponent implements OnInit {
         costo: formValue.costo,
         comentarios: formValue.comentarios,
         viaje_id: parseInt(formValue.viajeId, 10),
-        user_id_create: userIdCreate
+        user_id_create: userIdCreate,
+        user_id_paid: formValue.user_id_paid,
+        cost_distribution: this.selectedFriendsForDistribution
       };
 
       if(this.id_event != 0){

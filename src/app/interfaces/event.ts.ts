@@ -12,7 +12,15 @@ export interface Event {
   comentarios?: string;
   user_id_create?: number;
   user_id_paid?: number;
+  cost_distribution?: CostDistribution[];
   created_at?: string | Date;
   updated_at?: string | Date;
   categoria: 'Hospedaje' | 'Transporte' | 'Turismo' | 'Comida';
+}
+
+export interface CostDistribution {
+  user_id: number;
+  amount: number;
+  name?: string;   
+  surname?: string;
 }
