@@ -14,3 +14,41 @@
   border-radius: 80px;
   margin: 8px;
 }
+
+.modal-dialog {
+  max-width: 400px;
+  margin: 1.75rem auto;
+}
+
+.modal-header {
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.list-group-item {
+  border: none;
+  padding: 0.5rem 1rem;
+}
+
+.list-group-item .btn {
+  margin-left: auto;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem;
+  border-top: none;
+}
+
+.close {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+}

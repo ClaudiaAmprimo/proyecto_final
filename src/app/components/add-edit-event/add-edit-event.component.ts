@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { format } from 'date-fns';
@@ -100,22 +100,63 @@ export class AddEditEventComponent implements OnInit {
           this.friendsList = response;
           console.log('Amigos cargados:', this.friendsList);
 
-          this.selectedFriendsForDistribution = this.friendsList.map(friend => {
-            return {
-              user_id: friend.id_user,
-              amount: 0,
-              name: friend.name,
-              surname: friend.surname
-            };
-          });
-
-          console.log('Distribución de costos actualizada:', this.selectedFriendsForDistribution);
+          this.selectedFriendsForDistribution = [];
         },
         error: (error: any) => {
           console.error('Error al obtener los amigos:', error);
         }
       });
     }
+  }
+
+  addToCostDistribution(friend: any) {
+    const alreadyIncluded = this.selectedFriendsForDistribution.find(
+      (f) => f.user_id === friend.id_user
+    );
+
+    if (!alreadyIncluded) {
+      this.selectedFriendsForDistribution.push({
+        user_id: friend.id_user,
+        amount: 0,
+        name: friend.name,
+        surname: friend.surname,
+      });
+    } else {
+      this.selectedFriendsForDistribution = this.selectedFriendsForDistribution.filter(
+        (f) => f.user_id !== friend.id_user
+      );
+    }
+  }
+
+  isFriendSelected(friend: any): boolean {
+    return this.selectedFriendsForDistribution.some(
+      (f) => f.user_id === friend.id_user
+    );
+  }
+
+  calculateCostDistribution() {
+    const totalCost = this.eventForm.get('costo')?.value || 0;
+    const friendsCount = this.selectedFriendsForDistribution.length;
+
+    if (friendsCount > 0) {
+      const amountPerFriend = totalCost / friendsCount;
+
+      this.selectedFriendsForDistribution = this.selectedFriendsForDistribution.map((friend) => ({
+        ...friend,
+        amount: amountPerFriend
+      }));
+    } else {
+      console.warn('No hay amigos seleccionados para dividir el costo.');
+    }
+  }
+
+  confirmDistribution() {
+    this.calculateCostDistribution();
+    console.log('Distribución calculada:', this.selectedFriendsForDistribution);
+
+    this.eventForm.controls['cost_distribution'].setValue(this.selectedFriendsForDistribution);
+
+    this.closeModal();
   }
 
   onViajeSelected(event: any) {
@@ -130,12 +171,6 @@ export class AddEditEventComponent implements OnInit {
     if (modal) {
       modal.style.display = 'block';
     }
-  }
-
-  onFriendsSelected(selectedDistribution: CostDistribution[]) {
-    this.selectedFriendsForDistribution = selectedDistribution;
-    this.eventForm.controls['cost_distribution'].setValue(this.selectedFriendsForDistribution);
-    this.closeModal();
   }
 
   closeModal() {
@@ -166,6 +201,8 @@ export class AddEditEventComponent implements OnInit {
 
   onSubmit() {
     if (this.eventForm.valid) {
+      this.calculateCostDistribution();
+
       const formValue = this.eventForm.value;
       console.log('Form Value:', formValue);
 
@@ -194,12 +231,14 @@ export class AddEditEventComponent implements OnInit {
         cost_distribution: this.selectedFriendsForDistribution
       };
 
-      if(this.id_event != 0){
+      if (this.id_event !== 0) {
         this.updateEvent(this.id_event, event);
-      } else{
+      } else {
         console.log('Event:', event);
         this.addEvent(event);
       }
+    } else {
+      console.error('Formulario inválido:', this.eventForm.errors);
     }
   }
 

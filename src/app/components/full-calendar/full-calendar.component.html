@@ -8,7 +8,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editEventModalLabel">{{operacion}}  Evento</h5>
+        <h5 class="modal-title" id="editEventModalLabel">{{ operacion }} Evento</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -43,12 +43,29 @@
             <input type="number" id="costo" class="form-control" formControlName="costo" placeholder="Ingrese el costo">
           </div>
           <div class="form-group mt-2">
+            <label for="user_id_paid">Pagado por *</label>
+            <select id="user_id_paid" class="form-control" formControlName="user_id_paid">
+              <option value="" disabled selected>Seleccione quién pagó</option>
+              @for (friend of friendsList; track friend) {
+                <option [value]="friend.id_user">
+                  {{ friend.name }} {{ friend.surname }}
+                </option>
+              }
+            </select>
+          </div>
+          <div class="form-group mt-2">
+            <button type="button" class="btn btn-secondary" (click)="openFriendSelectionModal()">Dividido entre</button>
+          </div>
+          <div class="form-group mt-2">
+            <input type="hidden" formControlName="cost_distribution">
+          </div>
+          <div class="form-group mt-2">
             <label for="comentarios">Comentarios</label>
             <input type="text" id="comentarios" class="form-control" formControlName="comentarios" placeholder="Ingrese comentarios">
           </div>
           <div class="form-group mt-2">
             <label for="viaje">Viaje *</label>
-            <select id="viaje" class="form-control" formControlName="viajeId">
+            <select id="viaje" class="form-control" formControlName="viajeId" (change)="onViajeSelected($event)">
               @for (viaje of viajes; track viaje) {
                 <option [value]="viaje.id_viaje">{{ viaje.titulo }}</option>
               }
@@ -56,7 +73,7 @@
           </div>
           <div class="row mt-2">
             <div class="col text-center">
-              <button [disabled]="editEventForm.invalid" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
+              <button [disabled]="editEventForm.invalid || selectedFriendsForDistribution.length === 0" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
               <button type="button" class="btn btn-outline-secondary mx-2 custom-button" data-bs-dismiss="modal">Volver</button>
               @if (selectedEventId) {
                 <button type="button" class="btn btn-outline-danger mx-2 custom-button" (click)="deleteEvent()">Eliminar</button>
@@ -82,6 +99,41 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-danger" (click)="confirmDeleteEvent()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cost-distribution-modal" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="costDistributionModalLabel">Costo dividido entre</h5>
+        <button type="button" class="btn-close" (click)="closeModal('cost-distribution-modal')" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          @for (friend of friendsList; track friend) {
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                @if(friend.photo) {
+                  <img [src]="'http://localhost:3000/uploads/' + friend.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+                }
+                <span>{{ friend.name }} {{ friend.surname }}</span>
+              </div>
+              <button
+                (click)="addToCostDistribution(friend)"
+                class="btn btn-sm"
+                [class.btn-primary]="isFriendSelected(friend)"
+                [class.btn-outline-primary]="!isFriendSelected(friend)">
+                {{ isFriendSelected(friend) ? 'Seleccionado' : 'Agregar' }}
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="confirmDistribution()">Confirmar</button>
+        <button class="btn btn-secondary" (click)="closeModal('cost-distribution-modal')">Cancelar</button>
       </div>
     </div>
   </div>

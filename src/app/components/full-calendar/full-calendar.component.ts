@@ -11,6 +11,7 @@ import { Event } from '../../interfaces/event.ts';
 import { ViajeService } from '../../services/viaje.service';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { AmigoService } from '../../services/amigo.service';
 
 @Component({
   selector: 'app-full-calendar',
@@ -70,6 +71,8 @@ export class FullCalendarComponent implements OnInit {
   editEventForm: FormGroup;
   selectedEventId: number = 0;
   viajes: any[] = [];
+  friendsList: any[] = [];
+  selectedFriendsForDistribution: any[] = [];
   isEditing: boolean = false;
   operacion: string = 'Agregar ';
 
@@ -77,7 +80,8 @@ export class FullCalendarComponent implements OnInit {
     private eventService: EventService,
     private viajeService: ViajeService,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private amigoService: AmigoService
   ) {
     this.editEventForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
@@ -87,7 +91,13 @@ export class FullCalendarComponent implements OnInit {
       fechaFin: new FormControl('', Validators.required),
       costo: new FormControl('', Validators.required),
       comentarios: new FormControl(''),
-      viajeId: new FormControl('', Validators.required)
+      viajeId: new FormControl('', Validators.required),
+      user_id_paid: new FormControl('', Validators.required),
+      cost_distribution: new FormControl('', Validators.required)
+    });
+
+    this.editEventForm.get('costo')?.valueChanges.subscribe(() => {
+      this.calculateCostDistribution();
     });
   }
 
@@ -121,11 +131,79 @@ export class FullCalendarComponent implements OnInit {
     this.viajeService.getUserViajes().subscribe({
       next: (response) => {
         this.viajes = response.data;
+        console.log('Viajes cargados:', this.viajes);
       },
       error: (error) => {
         console.error('Error al obtener los viajes:', error);
       }
     });
+  }
+
+  loadFriends(viajeId: number) {
+    if (viajeId) {
+      this.amigoService.getFriendsByViaje(viajeId).subscribe({
+        next: (response: any) => {
+          this.friendsList = response;
+          console.log('Amigos cargados:', this.friendsList);
+          this.selectedFriendsForDistribution = [];
+        },
+        error: (error: any) => {
+          console.error('Error al obtener los amigos:', error);
+        }
+      });
+    }
+  }
+
+
+
+  addToCostDistribution(friend: any) {
+    const alreadyIncluded = this.selectedFriendsForDistribution.find(
+      (f) => f.user_id === friend.id_user
+    );
+
+    if (!alreadyIncluded) {
+      this.selectedFriendsForDistribution.push({
+        user_id: friend.id_user,
+        amount: 0,
+        name: friend.name,
+        surname: friend.surname,
+      });
+    } else {
+      this.selectedFriendsForDistribution = this.selectedFriendsForDistribution.filter(
+        (f) => f.user_id !== friend.id_user
+      );
+    }
+  }
+
+
+  isFriendSelected(friend: any): boolean {
+    return this.selectedFriendsForDistribution.some(
+      (f) => f.user_id === friend.id_user
+    );
+  }
+
+  calculateCostDistribution() {
+    const totalCost = this.editEventForm.get('costo')?.value || 0;
+    const friendsCount = this.selectedFriendsForDistribution.length;
+
+    if (friendsCount > 0) {
+      const amountPerFriend = totalCost / friendsCount;
+
+      this.selectedFriendsForDistribution = this.selectedFriendsForDistribution.map((friend) => ({
+        ...friend,
+        amount: amountPerFriend
+      }));
+    } else {
+      console.warn('No hay amigos seleccionados para dividir el costo.');
+    }
+  }
+
+  confirmDistribution() {
+    this.calculateCostDistribution();
+    console.log('Distribución calculada:', this.selectedFriendsForDistribution);
+
+    this.editEventForm.controls['cost_distribution'].setValue(this.selectedFriendsForDistribution);
+    this.closeModal('cost-distribution-modal');
   }
 
   handleEventClick(info: any) {
@@ -135,22 +213,31 @@ export class FullCalendarComponent implements OnInit {
     this.operacion = 'Editar ';
 
     this.eventService.getEvent(this.selectedEventId).subscribe((data: Event) => {
-        this.editEventForm.patchValue({
-            titulo: data.titulo,
-            categoria: data.categoria,
-            ubicacion: data.ubicacion,
-            fechaInicio: this.formatForDatetimeLocal(data.fecha_inicio),
-            fechaFin: this.formatForDatetimeLocal(data.fecha_fin),
-            costo: data.costo,
-            comentarios: data.comentarios,
-            viajeId: data.viaje_id
-        });
+      this.editEventForm.patchValue({
+        titulo: data.titulo,
+        categoria: data.categoria,
+        ubicacion: data.ubicacion,
+        fechaInicio: this.formatForDatetimeLocal(data.fecha_inicio),
+        fechaFin: this.formatForDatetimeLocal(data.fecha_fin),
+        costo: data.costo,
+        comentarios: data.comentarios,
+        viajeId: data.viaje_id,
+        user_id_paid: data.user_id_paid,
+        cost_distribution: data.cost_distribution
+      });
 
-        const modalElement = document.getElementById('editEventModal');
-        const modalInstance = new bootstrap.Modal(modalElement!);
-        modalInstance.show();
+      if (data.viaje_id !== undefined) {
+        this.loadFriends(data.viaje_id);
+      } else {
+        console.warn('Viaje ID is undefined');
+      }
+
+      const modalElement = document.getElementById('editEventModal');
+      const modalInstance = new bootstrap.Modal(modalElement!);
+      modalInstance.show();
     });
   }
+
 
   handleEventDrop(info: any) {
     this.updateEventDate(info.event);
@@ -197,7 +284,7 @@ export class FullCalendarComponent implements OnInit {
           const modalInstance = bootstrap.Modal.getInstance(modalElement!);
           modalInstance?.hide();
 
-          this.loadEvents(); 
+          this.loadEvents();
         },
         error: (error) => {
           console.error('Error al eliminar el evento:', error);
@@ -234,6 +321,8 @@ export class FullCalendarComponent implements OnInit {
 
   onSubmit() {
     if (this.editEventForm.valid) {
+      this.calculateCostDistribution();
+
       const formValue = this.editEventForm.value;
       const fechaInicioUTC = new Date(formValue.fechaInicio).toISOString();
       const fechaFinUTC = new Date(formValue.fechaFin).toISOString();
@@ -255,7 +344,7 @@ export class FullCalendarComponent implements OnInit {
       if (this.isEditing && this.selectedEventId) {
         this.eventService.updateEvent(this.selectedEventId, eventToSend).subscribe({
           next: () => {
-            this.closeModal();
+            this.closeModal('editEventModal');
             this.loadEvents();
           },
           error: (error) => {
@@ -265,7 +354,7 @@ export class FullCalendarComponent implements OnInit {
       } else {
         this.eventService.createEvent(eventToSend).subscribe({
           next: () => {
-            this.closeModal();
+            this.closeModal('editEventModal');
             this.loadEvents();
           },
           error: (error) => {
@@ -276,12 +365,29 @@ export class FullCalendarComponent implements OnInit {
     }
   }
 
-  closeModal() {
-    const modalElement = document.getElementById('editEventModal');
-    const modalInstance = bootstrap.Modal.getInstance(modalElement!);
-    modalInstance?.hide();
-    this.isEditing = false;
-    this.selectedEventId = 0;
-    this.operacion = 'Agregar ';
+
+  openFriendSelectionModal() {
+    const modalElement = document.getElementById('cost-distribution-modal');
+    if (modalElement) {
+      const modalInstance = new bootstrap.Modal(modalElement);
+      modalInstance.show();
+    }
+  }
+
+  closeModal(modalId: string) {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+  }
+
+  onViajeSelected(event: any) {
+    const selectedViajeId = event.target.value;
+    if (selectedViajeId) {
+      this.loadFriends(selectedViajeId);
+    }
   }
 }
