@@ -99,12 +99,28 @@ export class FullCalendarComponent implements OnInit {
     this.editEventForm.get('costo')?.valueChanges.subscribe(() => {
       this.calculateCostDistribution();
     });
+
+    if (!this.viajeId) {
+      this.viajeId = Number(this.route.snapshot.paramMap.get('id_viaje'));
+      if (this.viajeId) {
+        this.editEventForm.patchValue({ viajeId: this.viajeId });
+        this.loadFriends(this.viajeId);
+      }
+    }
   }
 
   ngOnInit(): void {
+    this.eventService.eventChanges$.subscribe(() => {
+      this.loadEvents();
+    });
+
+    if (this.viajeId) {
+      this.loadFriends(this.viajeId);
+    }
     this.loadEvents();
     this.loadViajes();
   }
+
 
   loadEvents() {
     this.eventService.getListEvents().subscribe(events => {
@@ -143,9 +159,14 @@ export class FullCalendarComponent implements OnInit {
     if (viajeId) {
       this.amigoService.getFriendsByViaje(viajeId).subscribe({
         next: (response: any) => {
+          console.log('Cargando amigos para el viaje:', viajeId);
           this.friendsList = response;
           console.log('Amigos cargados:', this.friendsList);
           this.selectedFriendsForDistribution = [];
+
+          if (this.friendsList.length > 0) {
+            this.editEventForm.get('user_id_paid')?.setValue(this.friendsList[0].id_user);
+          }
         },
         error: (error: any) => {
           console.error('Error al obtener los amigos:', error);
@@ -153,8 +174,6 @@ export class FullCalendarComponent implements OnInit {
       });
     }
   }
-
-
 
   addToCostDistribution(friend: any) {
     const alreadyIncluded = this.selectedFriendsForDistribution.find(

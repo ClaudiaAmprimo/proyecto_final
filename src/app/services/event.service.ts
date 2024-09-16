@@ -65,6 +65,7 @@ export class EventService {
     );
   }
 
+
   createEvent(event: Event): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}${this.eventUrl}`, event).pipe(
       map(() => {

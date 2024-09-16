@@ -20,6 +20,7 @@ export class MapViewEventComponent implements AfterViewInit {
   filteredEvents: CustomEvent[] = [];
   selectedCategories: string[] = ['Hospedaje', 'Transporte', 'Turismo', 'Comida'];
   viajeId: number | null = null;
+  markers: Marker[] = [];
 
   constructor(
     private http: HttpClient,
@@ -37,6 +38,10 @@ export class MapViewEventComponent implements AfterViewInit {
         console.error("No user location available");
         return;
       }
+
+      this.eventService.eventChanges$.subscribe(() => {
+        this.loadEvents();
+      });
 
       this.initializeMap();
       this.loadEvents();
@@ -76,75 +81,86 @@ export class MapViewEventComponent implements AfterViewInit {
     });
   }
 
-loadEvents() {
-  this.eventService.getListEvents().subscribe(events => {
-    this.events = this.viajeId ? events.filter(event => event.viaje_id === this.viajeId) : events;
-    this.applyFilters();
-  });
-}
+  loadEvents() {
+    this.eventService.getListEvents().subscribe(events => {
+      this.events = this.viajeId ? events.filter(event => event.viaje_id === this.viajeId) : events;
+      this.clearEventMarkers();
+      this.applyFilters();
+    });
+  }
 
-applyFilters() {
-  this.filteredEvents = this.events.filter(event =>
-    this.selectedCategories.includes(event.categoria)
-  );
-  this.addEventMarkers();
-}
 
-addEventMarkers() {
-  if (!this.mapService.isMapReady) return;
+  clearEventMarkers() {
+    if (!this.mapService.isMapReady) return;
 
-  const bounds = new LngLatBounds();
+    this.markers.forEach(marker => marker.remove());
+    this.markers = [];
+  }
 
-  this.filteredEvents.forEach(event => {
-    if (event.ubicacion) {
-      this.mapService.geocodeLocation(event.ubicacion).subscribe({
-        next: ([lng, lat]) => {
-          const popup = new Popup().setHTML(`
-            <h6>${event.titulo}</h6>
-            <span>${event.ubicacion}</span>
-          `);
+  applyFilters() {
+    this.filteredEvents = this.events.filter(event =>
+      this.selectedCategories.includes(event.categoria)
+    );
+    this.addEventMarkers();
+  }
 
-          const map = this.mapService.getMap();
-          if (map) {
-            new Marker({ color: 'blue' })
-              .setLngLat([lng, lat])
-              .setPopup(popup)
-              .addTo(map);
+  addEventMarkers() {
+    if (!this.mapService.isMapReady) return;
 
-            bounds.extend([lng, lat]);
+    const bounds = new LngLatBounds();
+
+    this.filteredEvents.forEach(event => {
+      if (event.ubicacion) {
+        this.mapService.geocodeLocation(event.ubicacion).subscribe({
+          next: ([lng, lat]) => {
+            const popup = new Popup().setHTML(`
+              <h6>${event.titulo}</h6>
+              <span>${event.ubicacion}</span>
+            `);
+
+            const map = this.mapService.getMap();
+            if (map) {
+              const marker = new Marker({ color: 'blue' })
+                .setLngLat([lng, lat])
+                .setPopup(popup)
+                .addTo(map);
+
+              this.markers.push(marker);
+              bounds.extend([lng, lat]);
+            }
+          },
+          error: (err) => {
+            console.error(`Invalid coordinates for event ${event.titulo}: ${event.ubicacion}`, err);
+          },
+          complete: () => {
+            const map = this.mapService.getMap();
+            if (map && !bounds.isEmpty()) {
+              map.fitBounds(bounds, { padding: 50 });
+            }
           }
-        },
-        error: (err) => {
-          console.error(`Invalid coordinates for event ${event.titulo}: ${event.ubicacion}`, err);
-        },
-        complete: () => {
-          const map = this.mapService.getMap();
-          if (map && !bounds.isEmpty()) {
-            map.fitBounds(bounds, { padding: 50 });
-          }
-        }
-      });
+        });
+      }
+    });
+
+    const map = this.mapService.getMap();
+    if (map && !bounds.isEmpty()) {
+      map.fitBounds(bounds, { padding: 50 });
     }
-  });
-
-  const map = this.mapService.getMap();
-  if (map && !bounds.isEmpty()) {
-    map.fitBounds(bounds, { padding: 50 });
   }
-}
 
-onCategorySelectionChange(event: any) {
-  const checkbox = event.target as HTMLInputElement;
-  if (checkbox.checked) {
-    this.selectedCategories.push(checkbox.value);
-  } else {
-    this.selectedCategories = this.selectedCategories.filter(cat => cat !== checkbox.value);
+
+  onCategorySelectionChange(event: any) {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedCategories.push(checkbox.value);
+    } else {
+      this.selectedCategories = this.selectedCategories.filter(cat => cat !== checkbox.value);
+    }
+    this.applyFilters();
   }
-  this.applyFilters();
-}
 
-onCategoryChange(selectedCategories: string[]) {
-  this.selectedCategories = selectedCategories;
-  this.applyFilters();
-}
+  onCategoryChange(selectedCategories: string[]) {
+    this.selectedCategories = selectedCategories;
+    this.applyFilters();
+  }
 }

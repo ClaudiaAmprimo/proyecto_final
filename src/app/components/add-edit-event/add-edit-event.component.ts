@@ -42,10 +42,12 @@ export class AddEditEventComponent implements OnInit {
   operacion: string = 'Agregar ';
   selectedFriendsForDistribution: CostDistribution[] = [];
   selectedPayer: number | null = null;
+  viajeId: number | null = null;
 
   constructor(private eventService: EventService, private viajeService: ViajeService,
     private authService: AuthService, private route: ActivatedRoute, private router: Router,
     private alertService: AlertService, private amigoService: AmigoService ){
+
     this.titulo = new FormControl('', Validators.required);
     this.categoria = new FormControl('', Validators.required);
     this.ubicacion = new FormControl('', Validators.required);
@@ -68,24 +70,36 @@ export class AddEditEventComponent implements OnInit {
       viajeId: this.viaje,
       user_id_paid: this.user_id_paid,
       cost_distribution: this.cost_distribution
-    })
+    });
 
-  this.id_event = Number(route.snapshot.paramMap.get('id'));
-  console.log(this.id_event)
+    this.viajeId = Number(route.snapshot.paramMap.get('id_viaje'));
+    console.log('Viaje ID desde la ruta:', this.viajeId);
+
+    if (this.viajeId) {
+      this.eventForm.patchValue({ viajeId: this.viajeId });
+    }
+
+    this.id_event = Number(route.snapshot.paramMap.get('id'));
+    console.log('ID del evento:', this.id_event);
   }
 
   ngOnInit() {
-    if (this.id_event != 0){
+    if (this.id_event !== 0) {
       this.operacion = 'Editar ';
       this.getEvent(this.id_event);
+    } else if (this.viajeId) {
+      this.eventForm.patchValue({ viajeId: this.viajeId });
+      this.loadFriends(this.viajeId);
     }
     this.loadViajes();
   }
 
   loadViajes() {
+    console.log('Cargando lista de viajes');
     this.viajeService.getUserViajes().subscribe({
       next: (response) => {
         this.viajes = response.data;
+        console.log('Viajes cargados:', this.viajes);
       },
       error: (error) => {
         console.error('Error al obtener los viajes:', error);
@@ -97,10 +111,14 @@ export class AddEditEventComponent implements OnInit {
     if (viajeId) {
       this.amigoService.getFriendsByViaje(viajeId).subscribe({
         next: (response: any) => {
+          console.log('Cargando amigos para el viaje:', viajeId);
           this.friendsList = response;
           console.log('Amigos cargados:', this.friendsList);
-
           this.selectedFriendsForDistribution = [];
+
+          if (this.friendsList.length > 0) {
+            this.user_id_paid.setValue(this.friendsList[0].id_user);
+          }
         },
         error: (error: any) => {
           console.error('Error al obtener los amigos:', error);

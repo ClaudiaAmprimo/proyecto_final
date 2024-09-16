@@ -43,7 +43,7 @@ export class EventComponent implements OnInit {
     }
 
     this.eventService.eventChanges$.subscribe(() => {
-      this.getListEvents(); 
+      this.getListEvents();
     });
 
     this.alertService.alertMessage$.subscribe(alert => {
@@ -110,6 +110,7 @@ export class EventComponent implements OnInit {
         console.log(id_event);
         this.alertService.showAlert('El evento ha sido eliminado con éxito', 'danger');
         this.getListEvents();
+        this.eventService.notifyEventChanges();
       },
       error: error => {
         console.error('Error al eliminar el evento:', error);
