@@ -173,7 +173,6 @@ export class AddEditEventComponent implements OnInit {
     console.log('Distribución calculada:', this.selectedFriendsForDistribution);
 
     this.eventForm.controls['cost_distribution'].setValue(this.selectedFriendsForDistribution);
-
     this.closeModal();
   }
 

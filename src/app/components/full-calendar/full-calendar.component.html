@@ -46,7 +46,7 @@
             <label for="user_id_paid">Pagado por *</label>
             <select id="user_id_paid" class="form-control" formControlName="user_id_paid">
               <option value="" disabled selected>Seleccione quién pagó</option>
-              @for (friend of friendsList; track friend) {
+              @for (friend of friendsList; track friend.id_user) {
                 <option [value]="friend.id_user">
                   {{ friend.name }} {{ friend.surname }}
                 </option>
@@ -63,14 +63,6 @@
             <label for="comentarios">Comentarios</label>
             <input type="text" id="comentarios" class="form-control" formControlName="comentarios" placeholder="Ingrese comentarios">
           </div>
-          <!-- <div class="form-group mt-2">
-            <label for="viaje">Viaje *</label>
-            <select id="viaje" class="form-control" formControlName="viajeId" (change)="onViajeSelected($event)">
-              @for (viaje of viajes; track viaje) {
-                <option [value]="viaje.id_viaje">{{ viaje.titulo }}</option>
-              }
-            </select>
-          </div> -->
           <div class="row mt-2">
             <div class="col text-center">
               <button [disabled]="editEventForm.invalid || selectedFriendsForDistribution.length === 0" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
@@ -112,7 +104,7 @@
       </div>
       <div class="modal-body">
         <ul class="list-group">
-          @for (friend of friendsList; track friend) {
+          @for (friend of friendsList; track friend.id_user) {
             <li class="list-group-item d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
                 @if(friend.photo) {

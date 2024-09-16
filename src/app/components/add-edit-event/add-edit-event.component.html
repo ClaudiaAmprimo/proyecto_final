@@ -60,7 +60,7 @@
             <label for="user_id_paid">Pagado por *</label>
             <select id="user_id_paid" class="form-control" formControlName="user_id_paid">
               <option value="" disabled selected>Seleccione quién pagó</option>
-              @for (friend of friendsList; track friend) {
+              @for (friend of friendsList; track friend.id_user) {
                 <option [value]="friend.id_user">
                   {{ friend.name }} {{ friend.surname }}
                 </option>
@@ -77,18 +77,6 @@
             <label for="comentarios">Comentarios</label>
             <input type="text" id="comentarios" class="form-control" formControlName="comentarios" placeholder="Ingrese comentarios">
           </div>
-          <!-- <div class="form-group mt-2">
-            <label for="viaje">Viaje *</label>
-            <select id="viaje" class="form-control" formControlName="viajeId" (change)="onViajeSelected($event)">
-              <option value="" disabled selected>Seleccione un viaje</option>
-              @for (viaje of viajes; track viaje) {
-                <option [value]="viaje.id_viaje">{{ viaje.titulo }}</option>
-              }
-            </select>
-            @if (viaje.hasError('required') && viaje.touched) {
-              <div class="form-error">El viaje es requerido</div>
-            }
-          </div> -->
           <div class="row mt-2">
             <div class="col text-center">
               <button [disabled]="eventForm.invalid" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
