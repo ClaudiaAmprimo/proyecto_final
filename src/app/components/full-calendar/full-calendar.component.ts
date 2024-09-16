@@ -121,7 +121,6 @@ export class FullCalendarComponent implements OnInit {
     this.loadViajes();
   }
 
-
   loadEvents() {
     this.eventService.getListEvents().subscribe(events => {
       const filteredEvents = this.viajeId ? events.filter(event => event.viaje_id === this.viajeId) : events;
@@ -194,7 +193,6 @@ export class FullCalendarComponent implements OnInit {
     }
   }
 
-
   isFriendSelected(friend: any): boolean {
     return this.selectedFriendsForDistribution.some(
       (f) => f.user_id === friend.id_user
@@ -256,7 +254,6 @@ export class FullCalendarComponent implements OnInit {
       modalInstance.show();
     });
   }
-
 
   handleEventDrop(info: any) {
     this.updateEventDate(info.event);
@@ -383,7 +380,6 @@ export class FullCalendarComponent implements OnInit {
       }
     }
   }
-
 
   openFriendSelectionModal() {
     const modalElement = document.getElementById('cost-distribution-modal');

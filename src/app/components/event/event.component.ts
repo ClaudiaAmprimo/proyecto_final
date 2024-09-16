@@ -33,23 +33,25 @@ export class EventComponent implements OnInit {
     private currentTripService: CurrentTripService ) { }
 
   ngOnInit(): void {
-    this.viajeId = Number(this.route.snapshot.paramMap.get('id_viaje'));
+    this.route.paramMap.subscribe(params => {
+      this.viajeId = Number(params.get('id_viaje'));
 
-    const state = history.state as { viajeTitulo: string };
-    if (state.viajeTitulo) {
-      this.viajeTitulo = state.viajeTitulo;
-      this.currentTripService.setCurrentTrip(this.viajeTitulo);
-    } else {
-      this.currentTripService.currentTripTitle$.subscribe((title) => {
-        this.viajeTitulo = title || 'Itinerario de Viaje';
-      });
-    }
+      if (this.viajeId) {
+        this.currentTripService.setCurrentTripId(this.viajeId);
+        this.getListEvents();
+        this.loadFriendsByViaje(this.viajeId);
+      }
 
-    if (this.viajeId) {
-      console.log('Viaje ID:', this.viajeId);
-      this.getListEvents();
-      this.loadFriendsByViaje(this.viajeId);
-    }
+      const state = history.state as { viajeTitulo: string };
+      if (state.viajeTitulo) {
+        this.viajeTitulo = state.viajeTitulo;
+        this.currentTripService.setCurrentTrip(this.viajeTitulo);
+      } else {
+        this.currentTripService.currentTripTitle$.subscribe((title) => {
+          this.viajeTitulo = title || 'Itinerario de Viaje';
+        });
+      }
+    });
 
     this.eventService.eventChanges$.subscribe(() => {
       this.getListEvents();

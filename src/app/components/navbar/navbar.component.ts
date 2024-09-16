@@ -52,6 +52,25 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  navigateToEvent() {
+    const viajeId = this.currentTripService.getCurrentTripId();
+    if (viajeId) {
+      this.router.navigate(['/event', viajeId]);
+    } else {
+      console.warn('No se ha seleccionado un viaje.');
+    }
+  }
+
+  onSelectViaje(viajeId: number, viajeTitulo: string) {
+    if (viajeId === 0) {
+      console.warn('No se ha seleccionado un viaje.');
+      return;
+    }
+    this.currentTripService.setCurrentTrip(viajeTitulo);
+    localStorage.setItem('currentViajeId', viajeId.toString());
+    this.router.navigate(['/calendar', viajeId]);
+  }
+
   onLogout() {
     this.authService.logout();
     this.router.navigate(['/login']);
