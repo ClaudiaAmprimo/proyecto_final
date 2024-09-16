@@ -8,6 +8,7 @@ import { AmigoService } from '../../services/amigo.service.js';
 import { MapaComponent } from "../mapa-screen/mapa.component";
 import { MapViewEventComponent } from "../map-view-event/map-view-event.component";
 import { FullCalendarComponent } from "../full-calendar/full-calendar.component";
+import { CurrentTripService } from '../../services/current-trip.service.js';
 
 @Component({
   selector: 'app-event',
@@ -28,17 +29,25 @@ export class EventComponent implements OnInit {
   viajeTitulo: string = '';
 
   constructor(private eventService: EventService, private alertService: AlertService,
-    private route: ActivatedRoute, private amigoService: AmigoService, private router: Router) { }
+    private route: ActivatedRoute, private amigoService: AmigoService, private router: Router,
+    private currentTripService: CurrentTripService ) { }
 
   ngOnInit(): void {
     this.viajeId = Number(this.route.snapshot.paramMap.get('id_viaje'));
-    const state = history.state as { viajeTitulo: string };
-    this.viajeTitulo = state?.viajeTitulo || 'Itinerario de Viaje';
 
-    this.getListEvents();
-    this.loadViajes();
+    const state = history.state as { viajeTitulo: string };
+    if (state.viajeTitulo) {
+      this.viajeTitulo = state.viajeTitulo;
+      this.currentTripService.setCurrentTrip(this.viajeTitulo);
+    } else {
+      this.currentTripService.currentTripTitle$.subscribe((title) => {
+        this.viajeTitulo = title || 'Itinerario de Viaje';
+      });
+    }
 
     if (this.viajeId) {
+      console.log('Viaje ID:', this.viajeId);
+      this.getListEvents();
       this.loadFriendsByViaje(this.viajeId);
     }
 

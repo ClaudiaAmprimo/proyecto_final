@@ -3,6 +3,7 @@ import { ViajeService } from '../../services/viaje.service';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CurrentTripService } from '../../services/current-trip.service';
 
 declare var bootstrap: any;
 
@@ -17,7 +18,8 @@ export class ViajeComponent implements OnInit {
   viajes: any[] = [];
   viajeIdToDelete: number | null = null;
 
-  constructor(private viajeService: ViajeService, private router: Router) {}
+  constructor(private viajeService: ViajeService, private router: Router,
+    private currentTripService: CurrentTripService ) {}
 
   ngOnInit(): void {
     this.loadViajes();
@@ -35,6 +37,12 @@ export class ViajeComponent implements OnInit {
     });
   }
 
+  onSelectViaje(viajeId: number, viajeTitulo: string) {
+    this.currentTripService.setCurrentTrip(viajeTitulo);
+    localStorage.setItem('currentViajeId', viajeId.toString());
+    this.router.navigate(['/event', viajeId]);
+  }
+
   openDeleteModal(viajeId: number): void {
     this.viajeIdToDelete = viajeId;
     const modalElement = document.getElementById('deleteEventModal');
@@ -49,7 +57,7 @@ export class ViajeComponent implements OnInit {
           console.log(`Viaje con ID ${this.viajeIdToDelete} eliminado exitosamente`);
           this.loadViajes();
           this.viajeIdToDelete = null;
-          this.router.navigate(['/viaje']); 
+          this.router.navigate(['/viaje']);
         },
         error: (error) => {
           console.error('Error al eliminar el viaje:', error);

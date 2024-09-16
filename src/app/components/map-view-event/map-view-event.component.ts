@@ -7,12 +7,13 @@ import { EventService } from '../../services/event.service';
 import { Event as CustomEvent } from '../../interfaces/event.ts';
 import { BtnMapLocationEventComponent } from "../btn-map-location-event/btn-map-location-event.component";
 import { ActivatedRoute } from '@angular/router';
+import { CurrentTripService } from '../../services/current-trip.service';
 
 @Component({
   selector: 'app-map-view-event',
   standalone: true,
   templateUrl: './map-view-event.component.html',
-  styleUrls: ['./map-view-event.component.scss'],
+  styleUrl: './map-view-event.component.scss',
   imports: [BtnMapLocationEventComponent]
 })
 export class MapViewEventComponent implements AfterViewInit {
@@ -27,12 +28,15 @@ export class MapViewEventComponent implements AfterViewInit {
     private placesService: PlacesService,
     private mapService: MapService,
     private eventService: EventService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private currentTripService: CurrentTripService
   ) {}
 
   ngAfterViewInit(): void {
-    this.viajeId = Number(this.route.snapshot.paramMap.get('id_viaje'));
-
+    this.currentTripService.currentTripTitle$.subscribe((title) => {
+      this.viajeId = Number(localStorage.getItem('currentViajeId'));
+      this.loadEvents();
+    });
     this.placesService.getUserLocation().then(() => {
       if (!this.placesService.useLocation) {
         console.error("No user location available");
@@ -49,7 +53,6 @@ export class MapViewEventComponent implements AfterViewInit {
       console.error("Error al obtener la ubicación del usuario:", error);
     });
   }
-
 
   initializeMap() {
     this.http.get<{ token: string }>('http://localhost:3000/mapbox/token').subscribe({
@@ -147,7 +150,6 @@ export class MapViewEventComponent implements AfterViewInit {
       map.fitBounds(bounds, { padding: 50 });
     }
   }
-
 
   onCategorySelectionChange(event: any) {
     const checkbox = event.target as HTMLInputElement;

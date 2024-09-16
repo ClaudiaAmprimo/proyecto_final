@@ -6,6 +6,8 @@ import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { CurrentTripService } from '../../services/current-trip.service';
+import { Collapse } from 'bootstrap';
 
 @Component({
   selector: 'app-navbar',
@@ -17,13 +19,30 @@ import { Observable } from 'rxjs';
 export class NavbarComponent implements OnInit {
   isAuthenticated$: Observable<boolean> = new Observable<boolean>();
   userPhotoUrl$: Observable<string | null>;
+  viajeTitulo: string = '';
+  viajeId: number | null = null;
 
-  constructor(private authService: AuthService, private router: Router, private elementRef: ElementRef) {
+  constructor(private authService: AuthService, private router: Router, private elementRef: ElementRef,
+    private currentTripService: CurrentTripService ) {
     this.userPhotoUrl$ = this.authService.userPhotoUrl$;
   }
 
   ngOnInit(): void {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
+    this.currentTripService.currentTripTitle$.subscribe(title => {
+      this.viajeTitulo = title;
+    });
+
+    this.viajeId = Number(localStorage.getItem('currentViajeId'));
+  }
+
+  toggleNavbar() {
+    const navbar = this.elementRef.nativeElement.querySelector('.navbar-collapse');
+    if (navbar.classList.contains('show')) {
+      navbar.classList.remove('show');
+    } else {
+      navbar.classList.add('show');
+    }
   }
 
   closeNavbar() {

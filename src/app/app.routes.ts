@@ -21,7 +21,7 @@ export const routes: Routes = [
   { path: 'viaje', component: ViajeComponent, canActivate: [AuthGuard] },
   { path: 'add-viaje', component: AddEditViajeComponent, canActivate: [AuthGuard] },
   { path: 'edit-viaje/:id', component: AddEditViajeComponent, canActivate: [AuthGuard] },
-  { path: 'event', component: EventComponent, canActivate: [AuthGuard] },
+  // { path: 'event', component: EventComponent, canActivate: [AuthGuard] },
   { path: 'event/:id_viaje', component: EventComponent, canActivate: [AuthGuard] },
   { path: 'add/:id_viaje', component: AddEditEventComponent, canActivate: [AuthGuard] },
   { path: 'edit/:id/:id_viaje', component: AddEditEventComponent, canActivate: [AuthGuard] },
