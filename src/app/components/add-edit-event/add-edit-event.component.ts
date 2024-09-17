@@ -318,13 +318,17 @@ export class AddEditEventComponent implements OnInit {
           }
         }
 
-        if (data.cost_distribution) {
-          this.selectedFriendsForDistribution = data.cost_distribution.map((entry: any) => ({
-            user_id: entry.user_id,
-            amount: entry.amount,
-            name: entry.user.name,
-            surname: entry.user.surname
-          }));
+        if (data.CostDistributions) {
+          this.selectedFriendsForDistribution = data.CostDistributions.map((entry: any) => {
+            const friend = this.friendsList.find(friend => friend.id_user === entry.user_id);
+            return {
+              user_id: entry.user_id,
+              amount: entry.amount,
+              name: friend ? friend.name : '',
+              surname: friend ? friend.surname : ''
+            };
+          });
+          this.eventForm.controls['cost_distribution'].setValue(this.selectedFriendsForDistribution);
         }
       });
     });
