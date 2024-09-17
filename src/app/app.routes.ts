@@ -25,7 +25,7 @@ export const routes: Routes = [
   { path: 'add/:id_viaje', component: AddEditEventComponent, canActivate: [AuthGuard] },
   { path: 'edit/:id/:id_viaje', component: AddEditEventComponent, canActivate: [AuthGuard] },
   { path: 'map', component: MapaComponent, canActivate: [AuthGuard] },
-  { path: 'calendar', component: FullCalendarComponent, canActivate: [AuthGuard] },
+  { path: 'calendar/:id_viaje', component: FullCalendarComponent, canActivate: [AuthGuard] },
   { path: 'chart', component: GraficosComponent, canActivate: [AuthGuard] },
   { path: 'amigos', component: AddFriendComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '', pathMatch: 'full'}

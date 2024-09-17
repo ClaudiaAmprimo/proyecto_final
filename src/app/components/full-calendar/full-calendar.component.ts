@@ -12,6 +12,7 @@ import { ViajeService } from '../../services/viaje.service';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AmigoService } from '../../services/amigo.service';
+import { CurrentTripService } from '../../services/current-trip.service';
 
 @Component({
   selector: 'app-full-calendar',
@@ -81,7 +82,8 @@ export class FullCalendarComponent implements OnInit {
     private viajeService: ViajeService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private amigoService: AmigoService
+    private amigoService: AmigoService,
+    private currentTripService: CurrentTripService
   ) {
     this.editEventForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
@@ -110,16 +112,29 @@ export class FullCalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.paramMap.subscribe((params) => {
+      const idFromRoute = Number(params.get('id_viaje'));
+      if (idFromRoute) {
+        this.currentTripService.setCurrentTripId(idFromRoute);
+      }
+    });
+
+    this.currentTripService.currentTripId$.subscribe((id) => {
+      this.viajeId = id;
+      if (this.viajeId) {
+        this.editEventForm.patchValue({ viajeId: this.viajeId });
+        this.loadFriends(this.viajeId);
+        this.loadEvents();
+      }
+    });
+
     this.eventService.eventChanges$.subscribe(() => {
       this.loadEvents();
     });
 
-    if (this.viajeId) {
-      this.loadFriends(this.viajeId);
-    }
-    this.loadEvents();
     this.loadViajes();
   }
+
 
   loadEvents() {
     this.eventService.getListEvents().subscribe(events => {
