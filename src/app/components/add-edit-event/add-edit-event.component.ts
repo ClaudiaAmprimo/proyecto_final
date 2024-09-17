@@ -107,24 +107,30 @@ export class AddEditEventComponent implements OnInit {
     });
   }
 
-  loadFriends(viajeId: number) {
-    if (viajeId) {
-      this.amigoService.getFriendsByViaje(viajeId).subscribe({
-        next: (response: any) => {
-          console.log('Cargando amigos para el viaje:', viajeId);
-          this.friendsList = response;
-          console.log('Amigos cargados:', this.friendsList);
-          this.selectedFriendsForDistribution = [];
+  loadFriends(viajeId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (viajeId) {
+        this.amigoService.getFriendsByViaje(viajeId).subscribe({
+          next: (response: any) => {
+            console.log('Cargando amigos para el viaje:', viajeId);
+            this.friendsList = response;
+            console.log('Amigos cargados:', this.friendsList);
+            this.selectedFriendsForDistribution = [];
 
-          if (this.friendsList.length > 0) {
-            this.user_id_paid.setValue(this.friendsList[0].id_user);
+            if (this.friendsList.length > 0) {
+              this.user_id_paid.setValue(this.friendsList[0].id_user);
+            }
+            resolve();
+          },
+          error: (error: any) => {
+            console.error('Error al obtener los amigos:', error);
+            reject(error);
           }
-        },
-        error: (error: any) => {
-          console.error('Error al obtener los amigos:', error);
-        }
-      });
-    }
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
   addToCostDistribution(friend: any) {
@@ -288,8 +294,8 @@ export class AddEditEventComponent implements OnInit {
   }
 
   getEvent(id_event: number) {
-    this.eventService.getEvent(id_event).subscribe((data: Event) => {
-      console.log(data);
+    this.eventService.getEvent(id_event).subscribe((data: any) => {
+      console.log('Datos del evento:', data);
 
       this.eventForm.patchValue({
         titulo: data.titulo,
@@ -300,6 +306,26 @@ export class AddEditEventComponent implements OnInit {
         costo: data.costo,
         comentarios: data.comentarios,
         viajeId: data.viaje_id
+      });
+
+      this.loadFriends(data.viaje_id).then(() => {
+        if (data.user_id_paid) {
+          const selectedFriend = this.friendsList.find(friend => friend.id_user === data.user_id_paid);
+          if (selectedFriend) {
+            this.user_id_paid.setValue(selectedFriend.id_user);
+          } else {
+            console.warn('Amigo pagador no encontrado en la lista de amigos del viaje.');
+          }
+        }
+
+        if (data.cost_distribution) {
+          this.selectedFriendsForDistribution = data.cost_distribution.map((entry: any) => ({
+            user_id: entry.user_id,
+            amount: entry.amount,
+            name: entry.user.name,
+            surname: entry.user.surname
+          }));
+        }
       });
     });
   }

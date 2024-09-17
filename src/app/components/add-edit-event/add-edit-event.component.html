@@ -59,9 +59,9 @@
           <div class="form-group mt-2">
             <label for="user_id_paid">Pagado por *</label>
             <select id="user_id_paid" class="form-control" formControlName="user_id_paid">
-              <option value="" disabled selected>Seleccione quién pagó</option>
+              <option value="" disabled>Seleccione quién pagó</option>
               @for (friend of friendsList; track friend.id_user) {
-                <option [value]="friend.id_user">
+                <option [value]="friend.id_user" [selected]="friend.id_user === user_id_paid.value">
                   {{ friend.name }} {{ friend.surname }}
                 </option>
               }

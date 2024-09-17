@@ -121,10 +121,9 @@ export class FullCalendarComponent implements OnInit {
 
     this.currentTripService.currentTripId$.subscribe((id) => {
       this.viajeId = id;
-      if (this.viajeId) {
+      if (this.viajeId !== null) {
         this.editEventForm.patchValue({ viajeId: this.viajeId });
-        this.loadFriends(this.viajeId);
-        this.loadEvents();
+        this.loadFriends(this.viajeId).then(() => this.loadEvents());
       }
     });
 
@@ -135,25 +134,33 @@ export class FullCalendarComponent implements OnInit {
     this.loadViajes();
   }
 
-
   loadEvents() {
     this.eventService.getListEvents().subscribe(events => {
       const filteredEvents = this.viajeId ? events.filter(event => event.viaje_id === this.viajeId) : events;
 
-      const calendarEvents = filteredEvents.map(event => ({
-        id: event.id_event?.toString(),
-        title: `${event.titulo} - ${event.comentarios}`,
-        start: event.fecha_inicio,
-        end: event.fecha_fin,
-        backgroundColor: '#b0c4b1',
-        borderColor: '#b0c4b1',
-        textColor: 'black'
-      }));
+      if (this.viajeId !== null) {
+        this.loadFriends(this.viajeId).then(() => {
+          const calendarEvents = filteredEvents.map(event => {
+            const payer = this.friendsList.find(friend => friend.id_user === event.user_id_paid);
+            const payerName = payer ? `${payer.name} ${payer.surname}` : 'Desconocido';
 
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: calendarEvents
-      };
+            return {
+              id: event.id_event?.toString(),
+              title: `${event.titulo}`,
+              start: event.fecha_inicio,
+              end: event.fecha_fin,
+              backgroundColor: '#b0c4b1',
+              borderColor: '#b0c4b1',
+              textColor: 'black'
+            };
+          });
+
+          this.calendarOptions = {
+            ...this.calendarOptions,
+            events: calendarEvents
+          };
+        });
+      }
     });
   }
 
@@ -169,24 +176,26 @@ export class FullCalendarComponent implements OnInit {
     });
   }
 
-  loadFriends(viajeId: number) {
-    if (viajeId) {
-      this.amigoService.getFriendsByViaje(viajeId).subscribe({
-        next: (response: any) => {
-          console.log('Cargando amigos para el viaje:', viajeId);
-          this.friendsList = response;
-          console.log('Amigos cargados:', this.friendsList);
-          this.selectedFriendsForDistribution = [];
-
-          if (this.friendsList.length > 0) {
-            this.editEventForm.get('user_id_paid')?.setValue(this.friendsList[0].id_user);
+  loadFriends(viajeId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (viajeId) {
+        this.amigoService.getFriendsByViaje(viajeId).subscribe({
+          next: (response: any) => {
+            console.log('Cargando amigos para el viaje:', viajeId);
+            this.friendsList = response;
+            console.log('Amigos cargados:', this.friendsList);
+            this.selectedFriendsForDistribution = [];
+            resolve();
+          },
+          error: (error: any) => {
+            console.error('Error al obtener los amigos:', error);
+            reject(error);
           }
-        },
-        error: (error: any) => {
-          console.error('Error al obtener los amigos:', error);
-        }
-      });
-    }
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
   addToCostDistribution(friend: any) {
