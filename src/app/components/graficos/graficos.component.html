@@ -1,2 +1,15 @@
 <div class="margen-navbar"></div>
-<p>graficos works!</p>
+@if (costDistributions.length > 0) {
+  <h4>Distribución de Costos para el Viaje</h4>
+  <ul>
+    @for (distribution of costDistributions; track distribution) {
+      <li>
+        {{ distribution.User.name }} {{ distribution.User.surname }} debe: {{ distribution.amount }} $
+        por el evento: {{ distribution.Event.titulo }}
+      </li>
+    }
+  </ul>
+}
+@else {
+  <p>No hay distribuciones de costos para este viaje.</p>
+}

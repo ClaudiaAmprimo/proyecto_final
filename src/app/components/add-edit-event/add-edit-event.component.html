@@ -80,7 +80,7 @@
           <div class="row mt-2">
             <div class="col text-center">
               <button [disabled]="eventForm.invalid" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
-              <button routerLink="/viaje" type="button" class="btn btn-outline-secondary mx-2 custom-button">Volver</button>
+              <button [routerLink]="['/event', viajeId]" type="button" class="btn btn-outline-secondary mx-2 custom-button">Volver</button>
             </div>
             <div class="mt-2">
               <p class="text-end">* Campos requeridos</p>
@@ -112,7 +112,7 @@
               <button
                 (click)="addToCostDistribution(friend)"
                 class="btn btn-sm"
-                [ngClass]="isFriendSelected(friend) ? 'btn-primary' : 'btn-outline-primary'">
+                [ngClass]="isFriendSelected(friend) ? 'btn-success' : 'btn-outline-success'">
                 {{ isFriendSelected(friend) ? 'Seleccionado' : 'Agregar' }}
               </button>
             </li>
@@ -120,8 +120,8 @@
         </ul>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" (click)="confirmDistribution()">Confirmar</button>
-        <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn btn-outline-dark" (click)="confirmDistribution()">Confirmar</button>
+        <button class="btn btn-outline-secondary" (click)="closeModal()">Cancelar</button>
       </div>
     </div>
   </div>
