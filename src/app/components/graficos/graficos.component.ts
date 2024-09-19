@@ -12,6 +12,8 @@ import { CostService } from '../../services/cost.service';
 export class GraficosComponent implements OnInit {
   viajeId: number | null = null;
   costDistributions: any[] = [];
+  userPaidBalances: any[] = [];
+  userCostSums: any[] = [];
 
   constructor(
     private currentTripService: CurrentTripService,
@@ -30,6 +32,8 @@ export class GraficosComponent implements OnInit {
       if (this.viajeId) {
         console.log('viajeId found, loading cost distributions for viajeId:', this.viajeId);
         this.loadCostDistributions(this.viajeId);
+        this.loadTotalPaidByUsers(this.viajeId);
+        this.loadSumCostDistributionsByUser(this.viajeId);
       } else {
         console.warn('No hay viaje seleccionado');
       }
@@ -43,16 +47,35 @@ export class GraficosComponent implements OnInit {
       next: (response) => {
         this.costDistributions = response.data;
         console.log('Distribuciones de costos recibidas:', this.costDistributions);
-
-        if (this.costDistributions.length > 0) {
-          console.log('Distribuciones de costos disponibles:', this.costDistributions);
-        } else {
-          console.warn('No hay distribuciones de costos disponibles');
-        }
       },
       error: (error) => {
         console.error('Error al obtener las distribuciones de costos:', error);
       }
     });
   }
+
+  loadTotalPaidByUsers(viajeId: number) {
+    this.costService.getTotalPaidByUsers(viajeId).subscribe({
+      next: (response) => {
+        this.userPaidBalances = response.data;
+        console.log('Total pagado por usuarios:', this.userPaidBalances);
+      },
+      error: (error) => {
+        console.error('Error al obtener el total pagado por usuarios:', error);
+      }
+    });
+  }
+
+  loadSumCostDistributionsByUser(viajeId: number) {
+    this.costService.getSumCostDistributionsByUser(viajeId).subscribe({
+      next: (response) => {
+        this.userCostSums = response.data;
+        console.log('Suma de distribuciones de costos por usuario:', this.userCostSums);
+      },
+      error: (error) => {
+        console.error('Error al obtener la suma de las distribuciones de costos:', error);
+      }
+    });
+  }
 }
+

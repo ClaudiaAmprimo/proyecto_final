@@ -14,4 +14,11 @@ export class CostService {
     return this.http.get<{ data: any[] }>(`${this.baseUrl}/viaje/${viajeId}`);
   }
 
+  getTotalPaidByUsers(viajeId: number): Observable<{ data: any[] }> {
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/total-paid/${viajeId}`);
+  }
+
+  getSumCostDistributionsByUser(viajeId: number): Observable<{ data: any[] }> {
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/sum-by-user/${viajeId}`);
+  }
 }

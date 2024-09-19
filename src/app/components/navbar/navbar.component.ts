@@ -70,6 +70,15 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  navigateToCost() {
+    const viajeId = this.currentTripService.getCurrentTripId();
+    if (viajeId) {
+      this.router.navigate(['/chart', viajeId]);
+    } else {
+      console.warn('No se ha seleccionado un viaje.');
+    }
+  }
+
   onSelectViaje(viajeId: number, viajeTitulo: string) {
     if (viajeId === 0) {
       console.warn('No se ha seleccionado un viaje.');
