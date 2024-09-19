@@ -44,3 +44,18 @@
     }
   </ul>
 </div>
+
+<div class="container">
+  <h4>Balances por usuario</h4>
+  @if (userBalances.length > 0) {
+    <ul>
+      @for (balance of userBalances; track balance) {
+        <li>
+          {{ balance.name }} {{ balance.surname }} tiene un balance de {{ balance.balance }} $.
+        </li>
+      }
+    </ul>
+  } @else {
+    <p>No se han calculado balances para este viaje.</p>
+  }
+</div>

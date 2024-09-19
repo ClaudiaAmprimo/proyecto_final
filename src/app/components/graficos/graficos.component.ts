@@ -14,6 +14,7 @@ export class GraficosComponent implements OnInit {
   costDistributions: any[] = [];
   userPaidBalances: any[] = [];
   userCostSums: any[] = [];
+  userBalances: any[] = [];
 
   constructor(
     private currentTripService: CurrentTripService,
@@ -34,6 +35,7 @@ export class GraficosComponent implements OnInit {
         this.loadCostDistributions(this.viajeId);
         this.loadTotalPaidByUsers(this.viajeId);
         this.loadSumCostDistributionsByUser(this.viajeId);
+        this.loadUserBalances(this.viajeId);
       } else {
         console.warn('No hay viaje seleccionado');
       }
@@ -77,5 +79,16 @@ export class GraficosComponent implements OnInit {
       }
     });
   }
-}
 
+  loadUserBalances(viajeId: number) {  
+    this.costService.getUserBalanceByTrip(viajeId).subscribe({
+      next: (response) => {
+        this.userBalances = response.data;
+        console.log('Balances por usuario:', this.userBalances);
+      },
+      error: (error) => {
+        console.error('Error al obtener los balances por usuario:', error);
+      }
+    });
+  }
+}
