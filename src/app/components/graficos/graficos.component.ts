@@ -11,10 +11,13 @@ import { CostService } from '../../services/cost.service';
 })
 export class GraficosComponent implements OnInit {
   viajeId: number | null = null;
+  userId: number | null = null;
   costDistributions: any[] = [];
   userPaidBalances: any[] = [];
   userCostSums: any[] = [];
   userBalances: any[] = [];
+  userBalance: any[] = [];
+  simplifiedBalances: any[] = [];
 
   constructor(
     private currentTripService: CurrentTripService,
@@ -29,6 +32,8 @@ export class GraficosComponent implements OnInit {
       console.log('Subscription to currentTripId$: received id:', id);
 
       this.viajeId = id;
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      this.userId = user?.id_user || null;
 
       if (this.viajeId) {
         console.log('viajeId found, loading cost distributions for viajeId:', this.viajeId);
@@ -36,6 +41,10 @@ export class GraficosComponent implements OnInit {
         this.loadTotalPaidByUsers(this.viajeId);
         this.loadSumCostDistributionsByUser(this.viajeId);
         this.loadUserBalances(this.viajeId);
+
+        if (this.userId) {
+          this.loadUserBalanceByUser(this.viajeId, this.userId);
+        }
       } else {
         console.warn('No hay viaje seleccionado');
       }
@@ -80,15 +89,90 @@ export class GraficosComponent implements OnInit {
     });
   }
 
-  loadUserBalances(viajeId: number) {  
+  loadUserBalances(viajeId: number) {
     this.costService.getUserBalanceByTrip(viajeId).subscribe({
       next: (response) => {
+        console.log('Datos recibidos para balances:', response.data);
         this.userBalances = response.data;
-        console.log('Balances por usuario:', this.userBalances);
+        this.simplifiedBalances = this.simplifyBalances(this.userBalances);
+        console.log('Balances por usuario simplificados:', this.simplifiedBalances);
       },
       error: (error) => {
         console.error('Error al obtener los balances por usuario:', error);
       }
     });
+  }
+
+  loadUserBalanceByUser(viajeId: number, userId: number) {
+    this.costService.getUserBalanceByUser(viajeId, userId).subscribe({
+      next: (response) => {
+        if (response.data.length > 0) {
+          this.userBalance = response.data;
+          console.log('Balance específico del usuario:', this.userBalance);
+          this.simplifiedBalances = this.simplifyBalances(this.userBalance);
+          console.log('Simplified balances:', this.simplifiedBalances);
+        } else {
+          console.log('No hay deudas o acreencias para este usuario.');
+          this.userBalance = [];
+        }
+      },
+      error: (error) => {
+        if (error.status === 404) {
+          console.warn('El usuario no tiene deudas ni acreencias.');
+          this.userBalance = [];
+        } else {
+          console.error('Error al obtener el balance específico del usuario:', error);
+        }
+      }
+    });
+  }
+
+  simplifyBalances(balances: any[]): any[] {
+    const simplified: any[] = [];
+    const balanceMap = new Map<string, { deudor_name: string, acreedor_name: string, net_balance: number }>();
+
+    console.log('Balances antes de simplificar:', balances);
+
+    for (const balance of balances) {
+      const key = `${balance.deudor_id}-${balance.acreedor_id}`;
+      const reverseKey = `${balance.acreedor_id}-${balance.deudor_id}`;
+
+      if (balance.deudor_id === balance.acreedor_id) {
+        console.log('Omitiendo balance donde el usuario se debe a sí mismo:', balance);
+        continue;
+      }
+
+      if (balanceMap.has(reverseKey)) {
+        const reverseBalance = balanceMap.get(reverseKey)!;
+        const newBalance = reverseBalance.net_balance - balance.net_balance;
+
+        if (newBalance === 0) {
+          console.log('Eliminando deuda por saldo cero:', reverseKey);
+          balanceMap.delete(reverseKey);
+        } else {
+          console.log('Actualizando balance inverso:', reverseKey, 'Nuevo balance:', newBalance);
+          reverseBalance.net_balance = newBalance;
+          balanceMap.set(reverseKey, reverseBalance);
+        }
+      } else {
+        console.log('Agregando nuevo balance:', key, balance);
+        balanceMap.set(key, {
+          deudor_name: balance.deudor_name,
+          acreedor_name: balance.acreedor_name,
+          net_balance: balance.net_balance
+        });
+      }
+    }
+
+    balanceMap.forEach((value) => {
+      simplified.push({
+        deudor_name: value.deudor_name,
+        acreedor_name: value.acreedor_name,
+        net_balance: value.net_balance
+      });
+    });
+
+    console.log('Balances simplificados:', simplified);
+    return simplified;
   }
 }

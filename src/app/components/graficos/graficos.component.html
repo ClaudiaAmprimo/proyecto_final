@@ -5,7 +5,7 @@
   <ul>
     @for (distribution of costDistributions; track distribution) {
       <li>
-        {{ distribution.User.name }} {{ distribution.User.surname }} ha gastado: {{ distribution.amount }} $
+        {{ distribution.User.name }} {{ distribution.User.surname }} ha gastado: {{ distribution.amount }} €
         por el evento: {{ distribution.Event.titulo }}
       </li>
     }
@@ -21,7 +21,7 @@
     @if (userPaidBalances.length > 0) {
       @for (balance of userPaidBalances; track balance) {
         <li>
-          {{ balance.name }} {{ balance.surname }} ha pagado un total de {{ balance.total_paid }} $.
+          {{ balance.name }} {{ balance.surname }} ha pagado un total de {{ balance.total_paid }} €.
         </li>
       }
     } @else {
@@ -36,7 +36,7 @@
     @if (userCostSums.length > 0) {
       @for (sum of userCostSums; track sum) {
         <li>
-          El usuario con ID {{ sum.user_id }} ha acumulado una deuda de {{ sum.total_amount }} $.
+          El usuario con ID {{ sum.user_id }} ha acumulado un gasto de {{ sum.total_amount }} €.
         </li>
       }
     } @else {
@@ -51,11 +51,40 @@
     <ul>
       @for (balance of userBalances; track balance) {
         <li>
-          {{ balance.name }} {{ balance.surname }} tiene un balance de {{ balance.balance }} $.
+          {{ balance.name }} {{ balance.surname }} tiene un balance de {{ balance.balance }} €.
         </li>
       }
     </ul>
   } @else {
     <p>No se han calculado balances para este viaje.</p>
+  }
+</div>
+
+<div class="container">
+  <h4>Balance del usuario</h4>
+  @if (userBalance.length > 0) {
+    @for (balance of userBalance; track balance) {
+      @if (balance.net_balance > 0) {
+        <p>{{ balance.deudor_name }} le debe {{ balance.net_balance }} € a {{ balance.acreedor_name }}.</p>
+      } @else {
+        <p>{{ balance.acreedor_name }} le debe {{ -balance.net_balance }} € a {{ balance.deudor_name }}.</p>
+      }
+    }
+  } @else {
+    <p>No hay deudas pendientes</p>
+  }
+</div>
+
+<div class="container">
+  <h4>Balance por cada usuario</h4>
+  <ul>
+    @for (balance of simplifiedBalances; track balance) {
+      <li>
+        <p>{{ balance.deudor_name }} le debe {{ balance.net_balance }} € a {{ balance.acreedor_name }}.</p>
+      </li>
+    }
+  </ul>
+  @if (simplifiedBalances.length === 0) {
+    <p>No hay deudas pendientes</p>
   }
 </div>

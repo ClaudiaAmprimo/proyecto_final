@@ -25,4 +25,8 @@ export class CostService {
   getUserBalanceByTrip(viajeId: number): Observable<{ data: any[] }> {
     return this.http.get<{ data: any[] }>(`${this.baseUrl}/user-balance/${viajeId}`);
   }
+  
+  getUserBalanceByUser(viajeId: number, userId: number): Observable<{ data: any[] }> {
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/balance-by-user/${viajeId}/${userId}`);
+  }
 }
