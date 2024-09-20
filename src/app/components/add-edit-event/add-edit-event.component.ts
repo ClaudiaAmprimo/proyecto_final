@@ -271,6 +271,7 @@ export class AddEditEventComponent implements OnInit {
         console.log("evento agregado");
         this.eventForm.reset();
         this.alertService.showAlert('El evento ha sido agregado con éxito', 'success');
+        this.eventService.notifyEventChanges();
         this.router.navigate(['/event', event.viaje_id]);
       },
       error: (error) => {
@@ -285,6 +286,7 @@ export class AddEditEventComponent implements OnInit {
         console.log("evento actualizado");
         this.eventForm.reset();
         this.alertService.showAlert('El evento ha sido actualizado con éxito', 'warning');
+        this.eventService.notifyEventChanges();
         this.router.navigate(['/event', event.viaje_id]);
       },
       error: (error) => {

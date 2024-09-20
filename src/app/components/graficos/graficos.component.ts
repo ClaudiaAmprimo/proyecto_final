@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { CostService } from '../../services/cost.service';
+import { EventService } from '../../services/event.service';
 
 @Component({
   selector: 'app-graficos',
@@ -21,7 +22,8 @@ export class GraficosComponent implements OnInit {
 
   constructor(
     private currentTripService: CurrentTripService,
-    private costService: CostService
+    private costService: CostService,
+    private eventService: EventService
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +49,14 @@ export class GraficosComponent implements OnInit {
         }
       } else {
         console.warn('No hay viaje seleccionado');
+      }
+    });
+    this.eventService.eventChanges$.subscribe(() => {
+      if (this.viajeId) {
+        this.loadCostDistributions(this.viajeId);
+        this.loadTotalPaidByUsers(this.viajeId);
+        this.loadSumCostDistributionsByUser(this.viajeId);
+        this.loadUserBalances(this.viajeId);
       }
     });
   }
