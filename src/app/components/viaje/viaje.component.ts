@@ -39,6 +39,7 @@ export class ViajeComponent implements OnInit {
 
   onSelectViaje(viajeId: number, viajeTitulo: string) {
     this.currentTripService.setCurrentTrip(viajeTitulo);
+    this.currentTripService.setCurrentTripId(viajeId);
     localStorage.setItem('currentViajeId', viajeId.toString());
     this.router.navigate(['/event', viajeId]);
   }

@@ -8,6 +8,7 @@ import { AmigoService } from '../../services/amigo.service';
 import { AddFriendComponent } from "../add-friend/add-friend.component";
 import { SeleccionarAmigoComponent } from "../seleccionar-amigo/seleccionar-amigo.component";
 import { User } from '../../interfaces/user';
+import { CurrentTripService } from '../../services/current-trip.service';
 
 declare var bootstrap: any;
 
@@ -26,7 +27,7 @@ export class AddEditViajeComponent implements OnInit {
   operacion: string = 'Crear ';
 
   constructor(private viajeService: ViajeService, private router: Router,
-    private alertService: AlertService, private amigoService: AmigoService, private route: ActivatedRoute) {
+    private alertService: AlertService, private amigoService: AmigoService, private route: ActivatedRoute,   private currentTripService: CurrentTripService) {
     this.viajeForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
       ubicacion: new FormControl('', Validators.required),
@@ -132,6 +133,8 @@ export class AddEditViajeComponent implements OnInit {
 
             const viajeId = response.data.id_viaje;
             const amigosSeleccionados = this.viajeForm.get('amigos')?.value;
+            this.currentTripService.setCurrentTrip(response.data.titulo);
+            this.currentTripService.setCurrentTripId(viajeId);
 
             if (amigosSeleccionados && amigosSeleccionados.length > 0) {
               const asociarAmigosObservables = amigosSeleccionados.map((amigoId: number) =>
