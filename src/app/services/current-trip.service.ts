@@ -16,9 +16,9 @@ export class CurrentTripService  {
     localStorage.setItem('currentViajeTitulo', title);
   }
 
-  setCurrentTripId(id: number) {
+  setCurrentTripId(id: number | null) {
     this.currentTripId.next(id);
-    localStorage.setItem('currentViajeId', id.toString());
+    localStorage.setItem('currentViajeId', id ? id.toString() : '');
   }
 
   getCurrentTripTitle(): string {
@@ -27,5 +27,16 @@ export class CurrentTripService  {
 
   getCurrentTripId(): number | null {
     return this.currentTripId.getValue();
+  }
+
+  setLastTripAsCurrent(viajes: any[]) {
+    if (viajes.length > 0) {
+      const lastViaje = viajes[0];
+      this.setCurrentTrip(lastViaje.titulo);
+      this.setCurrentTripId(lastViaje.id_viaje);
+    } else {
+      this.setCurrentTrip('Selecciona un viaje');
+      this.setCurrentTripId(null);
+    }
   }
 }

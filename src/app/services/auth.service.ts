@@ -113,6 +113,8 @@ export class AuthService {
   }
 
   logout(): void {
+    localStorage.removeItem('currentViajeId');
+    localStorage.removeItem('currentViajeTitulo');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.isAuthenticatedSubject.next(false);

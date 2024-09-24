@@ -27,9 +27,15 @@
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         @if (isAuthenticated$ | async) {
-          <li class="nav-item d-flex align-items-center me-3">
-            <span class="navbar-text text-white">Estás en el viaje: {{ viajeTitulo }}</span>
-          </li>
+          @if (viajeTitulo === 'Selecciona un viaje') {
+            <li class="nav-item d-flex align-items-center me-3">
+              <a class="navbar-text text-white" routerLink="/viaje" (click)="closeNavbar()">Selecciona un Viaje</a>
+            </li>
+          } @else {
+            <li class="nav-item d-flex align-items-center me-3">
+              <span class="navbar-text text-white">Estás en el viaje: {{ viajeTitulo }}</span>
+            </li>
+          }
           <li class="nav-item">
             <a (click)="onLogout(); closeNavbar()" class="nav-link">LOG OUT</a>
           </li>

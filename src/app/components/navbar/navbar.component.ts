@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { Collapse } from 'bootstrap';
 import { EventService } from '../../services/event.service';
+import { ViajeService } from '../../services/viaje.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,17 +25,40 @@ export class NavbarComponent implements OnInit {
   viajeId: number | null = null;
 
   constructor(private authService: AuthService, private router: Router, private elementRef: ElementRef,
-    private currentTripService: CurrentTripService, private eventService: EventService ) {
+    private currentTripService: CurrentTripService, private eventService: EventService, private viajeService: ViajeService ) {
     this.userPhotoUrl$ = this.authService.userPhotoUrl$;
   }
 
   ngOnInit(): void {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     this.currentTripService.currentTripTitle$.subscribe(title => {
-      this.viajeTitulo = title;
+      this.viajeTitulo = title || 'Selecciona un viaje';
     });
 
-    this.viajeId = Number(localStorage.getItem('currentViajeId'));
+    const currentTripId = localStorage.getItem('currentViajeId');
+    if (currentTripId) {
+      this.viajeId = Number(currentTripId);
+
+      this.viajeService.getViajeById(this.viajeId).subscribe({
+        next: (response) => {
+          const viaje = response.data;
+          const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+          if (!viaje.Users.some((user: any) => user.id_user === currentUser.id_user)) {
+            this.currentTripService.setCurrentTrip('Selecciona un viaje');
+            this.currentTripService.setCurrentTripId(null);
+            localStorage.removeItem('currentViajeId');
+            localStorage.removeItem('currentViajeTitulo');
+          }
+        },
+        error: () => {
+          this.currentTripService.setCurrentTrip('Selecciona un viaje');
+          this.currentTripService.setCurrentTripId(null);
+          localStorage.removeItem('currentViajeId');
+          localStorage.removeItem('currentViajeTitulo');
+        }
+      });
+    }
   }
 
   toggleNavbar() {
@@ -93,6 +117,11 @@ export class NavbarComponent implements OnInit {
   }
 
   onLogout() {
+    this.currentTripService.setCurrentTrip('Selecciona un viaje');
+    this.currentTripService.setCurrentTripId(null);
+
+    localStorage.removeItem('currentViajeId');
+    localStorage.removeItem('currentViajeTitulo');
     this.authService.logout();
     this.router.navigate(['/login']);
   }
