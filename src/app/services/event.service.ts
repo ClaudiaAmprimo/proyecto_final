@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { map, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import { Event } from '../interfaces/event.ts';
 
 @Injectable({
@@ -11,7 +11,9 @@ export class EventService {
   private baseUrl: string;
   private eventUrl: string;
 
-  private eventChangeSubject = new Subject<void>();
+  // private eventChangeSubject = new Subject<void>();
+  // eventChanges$ = this.eventChangeSubject.asObservable();
+  private eventChangeSubject = new BehaviorSubject<void>(undefined);
   eventChanges$ = this.eventChangeSubject.asObservable();
 
   constructor(private http: HttpClient){

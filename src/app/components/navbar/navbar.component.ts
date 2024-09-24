@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { Collapse } from 'bootstrap';
+import { EventService } from '../../services/event.service';
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +24,7 @@ export class NavbarComponent implements OnInit {
   viajeId: number | null = null;
 
   constructor(private authService: AuthService, private router: Router, private elementRef: ElementRef,
-    private currentTripService: CurrentTripService ) {
+    private currentTripService: CurrentTripService, private eventService: EventService ) {
     this.userPhotoUrl$ = this.authService.userPhotoUrl$;
   }
 
@@ -73,7 +74,9 @@ export class NavbarComponent implements OnInit {
   navigateToCost() {
     const viajeId = this.currentTripService.getCurrentTripId();
     if (viajeId) {
-      this.router.navigate(['/chart', viajeId]);
+      this.router.navigate(['/chart', viajeId]).then(() => {
+        this.eventService.notifyEventChanges();
+      });
     } else {
       console.warn('No se ha seleccionado un viaje.');
     }

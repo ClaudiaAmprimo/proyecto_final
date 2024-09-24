@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { CostService } from '../../services/cost.service';
 import { EventService } from '../../services/event.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-graficos',
@@ -19,136 +20,159 @@ export class GraficosComponent implements OnInit {
   userBalances: any[] = [];
   userBalance: any[] = [];
   simplifiedBalances: any[] = [];
+  isLoading = true;
 
   constructor(
     private currentTripService: CurrentTripService,
     private costService: CostService,
-    private eventService: EventService
+    private eventService: EventService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     console.log('ngOnInit: Subscribing to currentTripId$');
     console.log('currentTripId from localStorage:', localStorage.getItem('currentViajeId'));
 
-    this.currentTripService.currentTripId$.subscribe((id: number | null) => {
-      console.log('Subscription to currentTripId$: received id:', id);
+    this.route.paramMap.subscribe(params => {
+      this.viajeId = Number(params.get('id_viaje'));
+      this.loadDataForTrip();
+    });
 
-      this.viajeId = id;
+    this.eventService.eventChanges$.subscribe(() => {
+      this.loadDataForTrip();
+    });
+  }
+
+  loadDataForTrip() {
+    if (this.viajeId) {
+      this.isLoading = true;
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       this.userId = user?.id_user || null;
+      console.log('viajeId found, loading cost distributions for viajeId:', this.viajeId);
 
-      if (this.viajeId) {
-        console.log('viajeId found, loading cost distributions for viajeId:', this.viajeId);
-        this.loadCostDistributions(this.viajeId);
-        this.loadTotalPaidByUsers(this.viajeId);
-        this.loadSumCostDistributionsByUser(this.viajeId);
-        this.loadUserBalances(this.viajeId);
-
-        if (this.userId) {
-          this.loadUserBalanceByUser(this.viajeId, this.userId);
-        }
-      } else {
-        console.warn('No hay viaje seleccionado');
-      }
-    });
-    this.eventService.eventChanges$.subscribe(() => {
-      if (this.viajeId) {
-        this.loadCostDistributions(this.viajeId);
-        this.loadTotalPaidByUsers(this.viajeId);
-        this.loadSumCostDistributionsByUser(this.viajeId);
-        this.loadUserBalances(this.viajeId);
-      }
-    });
-  }
-
-  loadCostDistributions(viajeId: number) {
-    console.log('Cargando distribuciones de costos para el viajeId:', viajeId);
-
-    this.costService.getCostDistributionsByViajeId(viajeId).subscribe({
-      next: (response) => {
-        this.costDistributions = response.data;
-        console.log('Distribuciones de costos recibidas:', this.costDistributions);
-      },
-      error: (error) => {
-        console.error('Error al obtener las distribuciones de costos:', error);
-      }
-    });
-  }
-
-  loadTotalPaidByUsers(viajeId: number) {
-    this.costService.getTotalPaidByUsers(viajeId).subscribe({
-      next: (response) => {
-        this.userPaidBalances = response.data;
-        console.log('Total pagado por usuarios:', this.userPaidBalances);
-      },
-      error: (error) => {
-        console.error('Error al obtener el total pagado por usuarios:', error);
-      }
-    });
-  }
-
-  loadSumCostDistributionsByUser(viajeId: number) {
-    this.costService.getSumCostDistributionsByUser(viajeId).subscribe({
-      next: (response) => {
-        this.userCostSums = response.data;
-        console.log('Suma de distribuciones de costos por usuario:', this.userCostSums);
-      },
-      error: (error) => {
-        console.error('Error al obtener la suma de las distribuciones de costos:', error);
-      }
-    });
-  }
-
-  loadUserBalances(viajeId: number) {
-    this.costService.getUserBalanceByTrip(viajeId).subscribe({
-      next: (response) => {
-        console.log('Datos recibidos para balances:', response.data);
-        this.userBalances = response.data;
-        this.simplifiedBalances = this.simplifyBalances(this.userBalances);
-        console.log('Balances por usuario simplificados:', this.simplifiedBalances);
-      },
-      error: (error) => {
-        console.error('Error al obtener los balances por usuario:', error);
-      }
-    });
-  }
-
-  loadUserBalanceByUser(viajeId: number, userId: number) {
-    this.costService.getUserBalanceByUser(viajeId, userId).subscribe({
-      next: (response) => {
-        if (response.data.length > 0) {
-          this.userBalance = response.data;
-          console.log('Balance específico del usuario:', this.userBalance);
-          this.simplifiedBalances = this.simplifyBalances(this.userBalance);
-          console.log('Simplified balances:', this.simplifiedBalances);
+      Promise.all([
+        this.loadCostDistributions(this.viajeId),
+        this.loadTotalPaidByUsers(this.viajeId),
+        this.loadSumCostDistributionsByUser(this.viajeId),
+        this.loadUserBalances(this.viajeId)
+      ]).then(() => {
+        if (this.viajeId && this.userId) {
+          return this.loadUserBalanceByUser(this.viajeId, this.userId);
         } else {
-          console.log('No hay deudas o acreencias para este usuario.');
-          this.userBalance = [];
+          return Promise.resolve();
         }
-      },
-      error: (error) => {
-        if (error.status === 404) {
-          console.warn('El usuario no tiene deudas ni acreencias.');
-          this.userBalance = [];
-        } else {
-          console.error('Error al obtener el balance específico del usuario:', error);
+      }).then(() => {
+        this.isLoading = false;
+      }).catch(error => {
+        console.error('Error al cargar datos del viaje:', error);
+        this.isLoading = false;
+      });
+    } else {
+      console.warn('No hay viaje seleccionado');
+    }
+  }
+
+  loadCostDistributions(viajeId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.costService.getCostDistributionsByViajeId(viajeId).subscribe({
+        next: (response) => {
+          this.costDistributions = response.data;
+          console.log('Distribuciones de costos recibidas:', this.costDistributions);
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error al obtener las distribuciones de costos:', error);
+          reject(error);
         }
-      }
+      });
     });
   }
+
+  loadTotalPaidByUsers(viajeId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.costService.getTotalPaidByUsers(viajeId).subscribe({
+        next: (response) => {
+          this.userPaidBalances = response.data;
+          console.log('Total pagado por usuarios:', this.userPaidBalances);
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error al obtener el total pagado por usuarios:', error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  loadSumCostDistributionsByUser(viajeId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.costService.getSumCostDistributionsByUser(viajeId).subscribe({
+        next: (response) => {
+          this.userCostSums = response.data;
+          console.log('Suma de distribuciones de costos por usuario:', this.userCostSums);
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error al obtener la suma de las distribuciones de costos:', error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  loadUserBalances(viajeId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.costService.getUserBalanceByTrip(viajeId).subscribe({
+        next: (response) => {
+          this.userBalances = response.data;
+          this.simplifiedBalances = this.simplifyBalances(this.userBalances);
+          console.log('Balances por usuario simplificados:', this.simplifiedBalances);
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error al obtener los balances por usuario:', error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  loadUserBalanceByUser(viajeId: number, userId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.costService.getUserBalanceByUser(viajeId, userId).subscribe({
+        next: (response) => {
+          if (response.data.length > 0) {
+            this.userBalance = response.data;
+            this.simplifiedBalances = this.simplifyBalances(this.userBalance);
+            console.log('Simplified balances:', this.simplifiedBalances);
+          } else {
+            this.userBalance = [];
+          }
+          resolve();
+        },
+        error: (error) => {
+          if (error.status === 404) {
+            this.userBalance = [];
+          } else {
+            console.error('Error al obtener el balance específico del usuario:', error);
+          }
+          reject(error);  
+        }
+      });
+    });
+  }
+
 
   simplifyBalances(balances: any[]): any[] {
     const simplified: any[] = [];
     const balanceMap = new Map<string, { deudor_name: string, acreedor_name: string, net_balance: number }>();
-
-    console.log('Balances antes de simplificar:', balances);
 
     for (const balance of balances) {
       const key = `${balance.deudor_id}-${balance.acreedor_id}`;
       const reverseKey = `${balance.acreedor_id}-${balance.deudor_id}`;
 
       if (balance.deudor_id === balance.acreedor_id) {
-        console.log('Omitiendo balance donde el usuario se debe a sí mismo:', balance);
         continue;
       }
 
@@ -157,15 +181,12 @@ export class GraficosComponent implements OnInit {
         const newBalance = reverseBalance.net_balance - balance.net_balance;
 
         if (newBalance === 0) {
-          console.log('Eliminando deuda por saldo cero:', reverseKey);
           balanceMap.delete(reverseKey);
         } else {
-          console.log('Actualizando balance inverso:', reverseKey, 'Nuevo balance:', newBalance);
           reverseBalance.net_balance = newBalance;
           balanceMap.set(reverseKey, reverseBalance);
         }
       } else {
-        console.log('Agregando nuevo balance:', key, balance);
         balanceMap.set(key, {
           deudor_name: balance.deudor_name,
           acreedor_name: balance.acreedor_name,
@@ -182,7 +203,6 @@ export class GraficosComponent implements OnInit {
       });
     });
 
-    console.log('Balances simplificados:', simplified);
     return simplified;
   }
 }
