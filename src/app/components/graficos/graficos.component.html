@@ -6,7 +6,7 @@
   </div>
 }
 
-@if (!isLoading){
+@if (!isLoading) {
   <div class="container">
     <h4>Balance por cada usuario</h4>
     <ul class="list-group">
@@ -16,12 +16,15 @@
             <div>
               <p class="mb-0">
                 <strong>{{ balance.deudor_name }} {{ balance.deudor_surname }}</strong> le debe
-                <span class="text-success"><strong>{{ balance.net_balance }} €</strong></span> a
+                <span [ngClass]="{'text-danger': balance.net_balance > 0, 'text-success': balance.net_balance < 0}">
+                  <strong>{{ balance.net_balance }} €</strong>
+                </span> a
                 <strong>{{ balance.acreedor_name }} {{ balance.acreedor_surname }}</strong>
               </p>
             </div>
           </div>
-          <button class="btn btn-success" (click)="payDebt(balance)">PAGAR DEUDA</button>
+          <button class="btn btn-success" (click)="pagarDeuda(balance)">PAGAR DEUDA</button>
+
         </li>
       }
     </ul>

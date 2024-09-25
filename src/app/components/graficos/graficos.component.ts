@@ -1,15 +1,16 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { CostService } from '../../services/cost.service';
 import { EventService } from '../../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-graficos',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './graficos.component.html',
   styleUrl: './graficos.component.scss'
 })
@@ -31,7 +32,8 @@ export class GraficosComponent implements OnInit {
     private costService: CostService,
     private eventService: EventService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private changeDetector: ChangeDetectorRef,
   ) {
     Chart.register(...registerables);
     Chart.register(ChartDataLabels);
@@ -259,7 +261,9 @@ export class GraficosComponent implements OnInit {
       acreedor_name: string,
       acreedor_surname: string,
       event_title: string,
-      net_balance: number
+      net_balance: number,
+      paid_amount: number,
+      cost_distribution_id: number
     }>();
 
     for (const balance of balances) {
@@ -267,6 +271,16 @@ export class GraficosComponent implements OnInit {
       const reverseKey = `${balance.acreedor_id}-${balance.deudor_id}`;
 
       if (balance.deudor_id === balance.acreedor_id) {
+        continue;
+      }
+
+      if (balance.net_balance == null || isNaN(balance.net_balance)) {
+        console.warn(`Balance inválido encontrado para ${balance.deudor_name} y ${balance.acreedor_name}. Balance omitido.`);
+        continue;
+      }
+
+      if (balance.net_balance < 0) {
+        console.warn(`Balance negativo entre ${balance.deudor_name} y ${balance.acreedor_name}. Balance omitido.`);
         continue;
       }
 
@@ -287,27 +301,54 @@ export class GraficosComponent implements OnInit {
           acreedor_name: balance.acreedor_name,
           acreedor_surname: balance.acreedor_surname,
           event_title: balance.event_title || 'Evento desconocido',
-          net_balance: balance.net_balance
+          net_balance: balance.net_balance - (balance.paid_amount || 0),
+          paid_amount: balance.paid_amount || 0,
+          cost_distribution_id: balance.cost_distribution_id
         });
       }
     }
 
     balanceMap.forEach((value) => {
-      simplified.push({
-        deudor_name: value.deudor_name,
-        deudor_surname: value.deudor_surname,
-        acreedor_name: value.acreedor_name,
-        acreedor_surname: value.acreedor_surname,
-        event_title: value.event_title,
-        net_balance: value.net_balance
-      });
-      console.log(value)
+      if (value.net_balance !== 0) {
+        simplified.push({
+          deudor_name: value.deudor_name,
+          deudor_surname: value.deudor_surname,
+          acreedor_name: value.acreedor_name,
+          acreedor_surname: value.acreedor_surname,
+          event_title: value.event_title,
+          net_balance: value.net_balance,
+          paid_amount: value.paid_amount,
+          cost_distribution_id: value.cost_distribution_id
+        });
+      }
     });
 
     return simplified;
   }
 
-  payDebt(balance: any): void {
-    console.log(`Pagando deuda de ${balance.deudor_name} a ${balance.acreedor_name} por un monto de ${balance.net_balance} €.`);
+  pagarDeuda(balance: any) {
+    const paymentAmount = balance.net_balance;
+    if (paymentAmount > 0) {
+      if (balance.cost_distribution_id) {
+        this.costService.payDebt(balance.cost_distribution_id, paymentAmount).subscribe({
+          next: (response) => {
+            console.log('Pago realizado con éxito:', response);
+            if (this.viajeId && this.userId !== null) {
+              this.loadUserBalanceByUser(this.viajeId, this.userId);
+            } else {
+              console.warn('El userId o el viajeId no son válidos');
+            }
+          },
+          error: (error) => {
+            console.error('Error al procesar el pago:', error);
+          }
+        });
+      } else {
+        console.warn('El balance no contiene un cost_distribution_id válido.');
+      }
+    } else {
+      console.warn('No hay deuda pendiente para pagar.');
+    }
   }
+
 }
