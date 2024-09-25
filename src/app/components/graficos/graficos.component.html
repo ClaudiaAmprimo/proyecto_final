@@ -8,6 +8,31 @@
 
 @if (!isLoading){
   <div class="container">
+    <h4>Balance por cada usuario</h4>
+    <ul class="list-group">
+      @for (balance of simplifiedBalances; track balance) {
+        <li class="list-group-item d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <div>
+              <p class="mb-0">
+                <strong>{{ balance.deudor_name }} {{ balance.deudor_surname }}</strong> le debe
+                <span class="text-success"><strong>{{ balance.net_balance }} €</strong></span> a
+                <strong>{{ balance.acreedor_name }} {{ balance.acreedor_surname }}</strong>
+              </p>
+            </div>
+          </div>
+          <button class="btn btn-success" (click)="payDebt(balance)">PAGAR DEUDA</button>
+        </li>
+      }
+    </ul>
+    @if (simplifiedBalances.length === 0) {
+      <p>No hay deudas pendientes</p>
+    }
+  </div>
+
+  <br>
+
+  <div class="container">
   @if (costDistributions.length > 0) {
     <h4>Distribución de Costos para el Viaje</h4>
     <ul>
@@ -97,3 +122,8 @@
     }
   </div>
 }
+
+<div class="container">
+  <h4>Distribución de Costos por Usuario</h4>
+  <canvas #costChart></canvas>
+</div>

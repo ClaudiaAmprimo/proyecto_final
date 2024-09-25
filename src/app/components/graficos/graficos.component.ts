@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { CostService } from '../../services/cost.service';
 import { EventService } from '../../services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-graficos',
@@ -12,6 +14,8 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './graficos.component.scss'
 })
 export class GraficosComponent implements OnInit {
+  @ViewChild('costChart', { static: false }) costChart!: ElementRef;
+  chart: any;
   viajeId: number | null = null;
   userId: number | null = null;
   costDistributions: any[] = [];
@@ -28,7 +32,10 @@ export class GraficosComponent implements OnInit {
     private eventService: EventService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) {
+    Chart.register(...registerables);
+    Chart.register(ChartDataLabels);
+  }
 
   ngOnInit(): void {
     console.log('ngOnInit: Subscribing to currentTripId$');
@@ -111,6 +118,13 @@ export class GraficosComponent implements OnInit {
         next: (response) => {
           this.userCostSums = response.data;
           console.log('Suma de distribuciones de costos por usuario:', this.userCostSums);
+
+          if (this.userCostSums.length > 0) {
+            console.log('Datos para la gráfica:', this.userCostSums);
+            this.generateCostDistributionChart();
+          } else {
+            console.error('No hay datos suficientes para generar el gráfico');
+          }
           resolve();
         },
         error: (error) => {
@@ -157,16 +171,96 @@ export class GraficosComponent implements OnInit {
           } else {
             console.error('Error al obtener el balance específico del usuario:', error);
           }
-          reject(error);  
+          reject(error);
         }
       });
     });
   }
 
+  generateCostDistributionChart() {
+
+    if (!this.costChart) {
+      console.error('CostChart element not available');
+      return;
+    }
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    const userNames = this.userCostSums.map(sum => `${sum.name} ${sum.surname}`);
+    const totalAmounts = this.userCostSums.map(sum => sum.total_amount);
+
+    if (userNames.length === 0 || totalAmounts.length === 0) {
+      console.error('No hay datos suficientes para generar el gráfico');
+      return;
+    }
+
+    const data = {
+      labels: userNames,
+      datasets: [{
+        label: 'Distribución de Costos por Usuario (€)',
+        data: totalAmounts,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(255, 205, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(201, 203, 207, 0.2)'
+        ],
+        borderColor: [
+          'rgb(255, 99, 132)',
+          'rgb(255, 159, 64)',
+          'rgb(255, 205, 86)',
+          'rgb(75, 192, 192)',
+          'rgb(54, 162, 235)',
+          'rgb(153, 102, 255)',
+          'rgb(201, 203, 207)'
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    this.chart = new Chart(this.costChart.nativeElement, {
+      type: 'bar',
+      data: data,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          datalabels: {
+            color: '#000',
+            anchor: 'end',
+            align: 'top',
+            formatter: (value: any) => {
+              return typeof value === 'number' ? `€${value.toFixed(2)}` : '€0.00';
+            }
+          }
+        },
+        responsive: true
+      }
+    });
+  }
 
   simplifyBalances(balances: any[]): any[] {
     const simplified: any[] = [];
-    const balanceMap = new Map<string, { deudor_name: string, acreedor_name: string, net_balance: number }>();
+    const balanceMap = new Map<string, {
+      deudor_name: string,
+      deudor_surname: string,
+      acreedor_name: string,
+      acreedor_surname: string,
+      event_title: string,
+      net_balance: number
+    }>();
 
     for (const balance of balances) {
       const key = `${balance.deudor_id}-${balance.acreedor_id}`;
@@ -189,7 +283,10 @@ export class GraficosComponent implements OnInit {
       } else {
         balanceMap.set(key, {
           deudor_name: balance.deudor_name,
+          deudor_surname: balance.deudor_surname,
           acreedor_name: balance.acreedor_name,
+          acreedor_surname: balance.acreedor_surname,
+          event_title: balance.event_title || 'Evento desconocido',
           net_balance: balance.net_balance
         });
       }
@@ -198,11 +295,19 @@ export class GraficosComponent implements OnInit {
     balanceMap.forEach((value) => {
       simplified.push({
         deudor_name: value.deudor_name,
+        deudor_surname: value.deudor_surname,
         acreedor_name: value.acreedor_name,
+        acreedor_surname: value.acreedor_surname,
+        event_title: value.event_title,
         net_balance: value.net_balance
       });
+      console.log(value)
     });
 
     return simplified;
+  }
+
+  payDebt(balance: any): void {
+    console.log(`Pagando deuda de ${balance.deudor_name} a ${balance.acreedor_name} por un monto de ${balance.net_balance} €.`);
   }
 }

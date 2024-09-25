@@ -2,3 +2,45 @@
 .margen-navbar {
   margin-top: 68px;
 }
+
+.balance-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.balance-info {
+  display: flex;
+  align-items: center;
+}
+
+.balance-text {
+  margin-left: 10px;
+}
+
+.amount {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.pay-button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+.list-group-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+.text-success {
+  color: #28a745;
+}
