@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { CostDistribution } from '../interfaces/event.ts';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +13,8 @@ export class CostService {
 
   constructor(private http: HttpClient) {}
 
-  getCostDistributionsByViajeId(viajeId: number): Observable<{ data: any[] }> {
-    return this.http.get<{ data: any[] }>(`${this.baseUrl}/viaje/${viajeId}`);
+  getCostDistributionsByViajeId(viajeId: number): Observable<{ data: CostDistribution[] }> {
+    return this.http.get<{ data: CostDistribution[] }>(`${this.baseUrl}/viaje/${viajeId}`);
   }
 
   getTotalPaidByUsers(viajeId: number): Observable<{ data: any[] }> {
@@ -31,6 +34,12 @@ export class CostService {
   }
 
   payDebt(debtId: number, paymentAmount: number): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/${debtId}/pay`, { paymentAmount });
+    return this.http.patch(`${this.baseUrl}/${debtId}/pay`, { paymentAmount })
+    .pipe(
+      catchError(error => {
+        console.error('Error al pagar la deuda:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }

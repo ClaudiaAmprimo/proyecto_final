@@ -24,7 +24,10 @@ export class GraficosComponent implements OnInit {
   userCostSums: any[] = [];
   userBalances: any[] = [];
   userBalance: any[] = [];
-  simplifiedBalances: any[] = [];
+
+  generalSimplifiedBalances: any[] = [];
+  userSimplifiedBalances: any[] = [];
+
   isLoading = true;
 
   constructor(
@@ -141,9 +144,16 @@ export class GraficosComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.costService.getUserBalanceByTrip(viajeId).subscribe({
         next: (response) => {
-          this.userBalances = response.data;
-          this.simplifiedBalances = this.simplifyBalances(this.userBalances);
-          console.log('Balances por usuario simplificados:', this.simplifiedBalances);
+          this.userBalances = response.data.map((balance: any) => ({
+            ...balance,
+            net_balance: Number(balance.net_balance),
+            paid_amount: Number(balance.paid_amount),
+            cost_distribution_id: Number(balance.cost_distribution_id)
+          }));
+          console.log('Balances por usuario:', this.userBalances);
+
+          this.generalSimplifiedBalances = this.simplifyBalances(this.userBalances);
+          console.log('Balances simplificados generales:', this.generalSimplifiedBalances);
           resolve();
         },
         error: (error) => {
@@ -159,17 +169,24 @@ export class GraficosComponent implements OnInit {
       this.costService.getUserBalanceByUser(viajeId, userId).subscribe({
         next: (response) => {
           if (response.data.length > 0) {
-            this.userBalance = response.data;
-            this.simplifiedBalances = this.simplifyBalances(this.userBalance);
-            console.log('Simplified balances:', this.simplifiedBalances);
+            this.userBalance = response.data.map((balance: any) => ({
+              ...balance,
+              net_balance: Number(balance.net_balance),
+              paid_amount: Number(balance.paid_amount)
+            }));
+            console.log('Converted userBalance:', this.userBalance);
+            this.userSimplifiedBalances = this.simplifyBalances(this.userBalance);
+            console.log('Simplified balances del usuario:', this.userSimplifiedBalances);
           } else {
             this.userBalance = [];
+            this.userSimplifiedBalances = [];
           }
           resolve();
         },
         error: (error) => {
           if (error.status === 404) {
             this.userBalance = [];
+            this.userSimplifiedBalances = [];
           } else {
             console.error('Error al obtener el balance específico del usuario:', error);
           }
@@ -254,101 +271,115 @@ export class GraficosComponent implements OnInit {
   }
 
   simplifyBalances(balances: any[]): any[] {
-    const simplified: any[] = [];
     const balanceMap = new Map<string, {
       deudor_name: string,
       deudor_surname: string,
       acreedor_name: string,
       acreedor_surname: string,
-      event_title: string,
       net_balance: number,
-      paid_amount: number,
-      cost_distribution_id: number
+      cost_distributions: {
+        id: number,
+        amount: number,
+        paid_amount: number
+      }[]
     }>();
 
-    for (const balance of balances) {
-      const key = `${balance.deudor_id}-${balance.acreedor_id}`;
-      const reverseKey = `${balance.acreedor_id}-${balance.deudor_id}`;
-
+    balances.forEach(balance => {
       if (balance.deudor_id === balance.acreedor_id) {
-        continue;
+        console.log(`Excluyendo deuda donde deudor_id (${balance.deudor_id}) == acreedor_id (${balance.acreedor_id})`);
+        return;
       }
 
-      if (balance.net_balance == null || isNaN(balance.net_balance)) {
-        console.warn(`Balance inválido encontrado para ${balance.deudor_name} y ${balance.acreedor_name}. Balance omitido.`);
-        continue;
-      }
+      const key = `${balance.deudor_id}-${balance.acreedor_id}`;
 
-      if (balance.net_balance < 0) {
-        console.warn(`Balance negativo entre ${balance.deudor_name} y ${balance.acreedor_name}. Balance omitido.`);
-        continue;
-      }
-
-      if (balanceMap.has(reverseKey)) {
-        const reverseBalance = balanceMap.get(reverseKey)!;
-        const newBalance = reverseBalance.net_balance - balance.net_balance;
-
-        if (newBalance === 0) {
-          balanceMap.delete(reverseKey);
-        } else {
-          reverseBalance.net_balance = newBalance;
-          balanceMap.set(reverseKey, reverseBalance);
-        }
+      if (balanceMap.has(key)) {
+        const existing = balanceMap.get(key)!;
+        existing.net_balance += (balance.amount - balance.paid_amount);
+        existing.cost_distributions.push({
+          id: balance.cost_distribution_id,
+          amount: balance.amount,
+          paid_amount: balance.paid_amount
+        });
+        balanceMap.set(key, existing);
       } else {
         balanceMap.set(key, {
           deudor_name: balance.deudor_name,
           deudor_surname: balance.deudor_surname,
           acreedor_name: balance.acreedor_name,
           acreedor_surname: balance.acreedor_surname,
-          event_title: balance.event_title || 'Evento desconocido',
-          net_balance: balance.net_balance - (balance.paid_amount || 0),
-          paid_amount: balance.paid_amount || 0,
-          cost_distribution_id: balance.cost_distribution_id
+          net_balance: balance.amount - balance.paid_amount,
+          cost_distributions: [{
+            id: balance.cost_distribution_id,
+            amount: balance.amount,
+            paid_amount: balance.paid_amount
+          }]
         });
       }
-    }
+    });
 
-    balanceMap.forEach((value) => {
-      if (value.net_balance !== 0) {
+    const simplified: any[] = [];
+
+    balanceMap.forEach((value, key) => {
+      if (value.net_balance > 0) {
         simplified.push({
           deudor_name: value.deudor_name,
           deudor_surname: value.deudor_surname,
           acreedor_name: value.acreedor_name,
           acreedor_surname: value.acreedor_surname,
-          event_title: value.event_title,
           net_balance: value.net_balance,
-          paid_amount: value.paid_amount,
-          cost_distribution_id: value.cost_distribution_id
+          cost_distributions: value.cost_distributions
         });
       }
     });
-
+    console.log('Balances simplificados:', simplified);
     return simplified;
   }
 
   pagarDeuda(balance: any) {
     const paymentAmount = balance.net_balance;
     if (paymentAmount > 0) {
-      if (balance.cost_distribution_id) {
-        this.costService.payDebt(balance.cost_distribution_id, paymentAmount).subscribe({
-          next: (response) => {
-            console.log('Pago realizado con éxito:', response);
-            if (this.viajeId && this.userId !== null) {
-              this.loadUserBalanceByUser(this.viajeId, this.userId);
-            } else {
-              console.warn('El userId o el viajeId no son válidos');
+      let remainingAmount = paymentAmount;
+      const totalDeudaPendiente = balance.cost_distributions.reduce((sum: number, dist: any) => sum + (dist.amount - dist.paid_amount), 0);
+
+      balance.cost_distributions.forEach((distribution: { id: number; amount: number; paid_amount: number }) => {
+        if (remainingAmount <= 0) return;
+
+        const deudaPendiente = distribution.amount - distribution.paid_amount;
+        const proportion = deudaPendiente / totalDeudaPendiente;
+        const payment = Math.min(remainingAmount, paymentAmount * proportion);
+
+        if (payment > 0) {
+          this.costService.payDebt(distribution.id, payment).subscribe({
+            next: (response) => {
+              console.log(`Pago realizado con éxito para distribución ID ${distribution.id}:`, response);
+              if (this.viajeId !== null) {
+                this.loadUserBalances(this.viajeId).then(() => {
+                  this.changeDetector.detectChanges();
+                  console.log('Balances generales actualizados después del pago.');
+                }).catch(error => {
+                  console.error('Error al actualizar los balances generales después del pago:', error);
+                });
+
+                this.loadUserBalanceByUser(this.viajeId, this.userId!).then(() => {
+                  this.changeDetector.detectChanges();
+                  console.log('Balances específicos del usuario actualizados después del pago.');
+                }).catch(error => {
+                  console.error('Error al actualizar los balances específicos del usuario después del pago:', error);
+                });
+              } else {
+                console.warn('El viajeId es null. No se puede cargar los balances.');
+              }
+            },
+            error: (error) => {
+              console.error(`Error al procesar el pago para distribución ID ${distribution.id}:`, error);
             }
-          },
-          error: (error) => {
-            console.error('Error al procesar el pago:', error);
-          }
-        });
-      } else {
-        console.warn('El balance no contiene un cost_distribution_id válido.');
-      }
+          });
+
+          remainingAmount -= payment;
+        }
+      });
     } else {
       console.warn('No hay deuda pendiente para pagar.');
     }
   }
-
 }

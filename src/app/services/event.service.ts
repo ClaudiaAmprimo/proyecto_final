@@ -11,8 +11,6 @@ export class EventService {
   private baseUrl: string;
   private eventUrl: string;
 
-  // private eventChangeSubject = new Subject<void>();
-  // eventChanges$ = this.eventChangeSubject.asObservable();
   private eventChangeSubject = new BehaviorSubject<void>(undefined);
   eventChanges$ = this.eventChangeSubject.asObservable();
 

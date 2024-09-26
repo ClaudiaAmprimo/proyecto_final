@@ -21,6 +21,7 @@ export interface Event {
 export interface CostDistribution {
   user_id: number;
   amount: number;
-  name?: string;   
+  name?: string;
   surname?: string;
+  paid_amount?: number;
 }

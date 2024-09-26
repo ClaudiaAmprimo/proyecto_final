@@ -10,31 +10,30 @@
   <div class="container">
     <h4>Balance por cada usuario</h4>
     <ul class="list-group">
-      @for (balance of simplifiedBalances; track balance) {
+      @for(balance of generalSimplifiedBalances; track balance){
         <li class="list-group-item d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center">
             <div>
               <p class="mb-0">
-                <strong>{{ balance.deudor_name }} {{ balance.deudor_surname }}</strong> le debe
-                <span [ngClass]="{'text-danger': balance.net_balance > 0, 'text-success': balance.net_balance < 0}">
-                  <strong>{{ balance.net_balance }} €</strong>
+                <strong>{{ balance.deudor_name | titlecase }} {{ balance.deudor_surname | titlecase }}</strong> le debe
+                <span class="text-danger">
+                  <strong>{{ balance.net_balance | number:'1.2-2' }} €</strong>
                 </span> a
-                <strong>{{ balance.acreedor_name }} {{ balance.acreedor_surname }}</strong>
+                <strong>{{ balance.acreedor_name | titlecase }} {{ balance.acreedor_surname | titlecase }}</strong>
               </p>
             </div>
           </div>
-          <button class="btn btn-success" (click)="pagarDeuda(balance)">PAGAR DEUDA</button>
-
+          <button class="btn btn-success" (click)="pagarDeuda(balance)">LIQUIDAR DEUDA</button>
         </li>
       }
     </ul>
-    @if (simplifiedBalances.length === 0) {
+    @if(generalSimplifiedBalances.length === 0){
       <p>No hay deudas pendientes</p>
     }
   </div>
 
-  <br>
 
+<!--
   <div class="container">
   @if (costDistributions.length > 0) {
     <h4>Distribución de Costos para el Viaje</h4>
@@ -87,7 +86,7 @@
       <ul>
         @for (balance of userBalances; track balance) {
           <li>
-            {{ balance.name }} {{ balance.surname }} tiene un balance de {{ balance.balance }} €.
+            {{ balance.deudor_name }} {{ balance.deudor_surname }} tiene un balance de {{ balance.net_balance | number:'1.2-2' }} €.
           </li>
         }
       </ul>
@@ -109,9 +108,9 @@
     } @else {
       <p>No hay deudas pendientes</p>
     }
-  </div>
+  </div> -->
 
-  <div class="container">
+  <!-- <div class="container">
     <h4>Balance por cada usuario</h4>
     <ul>
       @for (balance of simplifiedBalances; track balance) {
@@ -123,10 +122,10 @@
     @if (simplifiedBalances.length === 0) {
       <p>No hay deudas pendientes</p>
     }
-  </div>
+  </div> -->
 }
 
-<div class="container">
-  <h4>Distribución de Costos por Usuario</h4>
+<div class="container mt-5">
+  <h5>Gastos Por Persona</h5>
   <canvas #costChart></canvas>
 </div>
