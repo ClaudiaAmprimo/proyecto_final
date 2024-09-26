@@ -197,7 +197,6 @@ export class GraficosComponent implements OnInit {
   }
 
   generateCostDistributionChart() {
-
     if (!this.costChart) {
       console.error('CostChart element not available');
       return;
@@ -208,7 +207,10 @@ export class GraficosComponent implements OnInit {
     }
 
     const userNames = this.userCostSums.map(sum => `${sum.name} ${sum.surname}`);
-    const totalAmounts = this.userCostSums.map(sum => sum.total_amount);
+    const totalAmounts = this.userCostSums.map(sum => {
+      const amount = parseFloat(sum.total_amount);
+      return isNaN(amount) ? 0 : amount;
+    });
 
     if (userNames.length === 0 || totalAmounts.length === 0) {
       console.error('No hay datos suficientes para generar el gráfico');
@@ -218,7 +220,7 @@ export class GraficosComponent implements OnInit {
     const data = {
       labels: userNames,
       datasets: [{
-        label: 'Distribución de Costos por Usuario (€)',
+        label: 'Gastos Totales por Usuario (€)',
         data: totalAmounts,
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
@@ -261,7 +263,8 @@ export class GraficosComponent implements OnInit {
             anchor: 'end',
             align: 'top',
             formatter: (value: any) => {
-              return typeof value === 'number' ? `€${value.toFixed(2)}` : '€0.00';
+              const amount = typeof value === 'number' ? value : 0;
+              return `€${amount.toFixed(2)}`;
             }
           }
         },
