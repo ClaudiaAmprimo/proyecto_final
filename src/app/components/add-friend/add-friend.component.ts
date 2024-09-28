@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AmigoService } from '../../services/amigo.service';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { User } from '../../interfaces/user';
 import { AlertService } from '../../services/alert.service';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-add-friend',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ConfirmModalComponent],
   templateUrl: './add-friend.component.html',
   styleUrls: ['./add-friend.component.scss']
 })
@@ -20,6 +21,9 @@ export class AddFriendComponent implements OnInit{
   currentUser: User | null = null;
   alertMessage: string | null = null;
   alertType: 'success' | 'danger' | 'warning' = 'success';
+  friendIdToDelete: number | null = null;
+
+  @ViewChild('confirmModal') confirmModal!: ConfirmModalComponent;
 
   constructor(private amigoService: AmigoService, private alertService: AlertService) { }
 
@@ -71,7 +75,7 @@ export class AddFriendComponent implements OnInit{
     });
   }
 
-  addFriend(amigo_id: number) {
+  addFriend(amigo_id: number): void {
     this.amigoService.addFriend(amigo_id).subscribe({
       next: () => {
         this.loadFriends();
@@ -85,16 +89,28 @@ export class AddFriendComponent implements OnInit{
     });
   }
 
-  removeFriend(amigo_id: number) {
-    this.amigoService.removeFriend(amigo_id).subscribe({
-      next: () => {
-        this.loadFriends();
-        this.alertService.showAlert('Amigo eliminado con éxito', 'warning');
-      },
-      error: (error) => {
-        console.error('Error al eliminar amigo:', error);
-        this.alertService.showAlert('Hubo un problema al eliminar al amigo. Intenta de nuevo.', 'danger');
-      }
-    });
+  removeFriend(amigo_id: number): void {
+    this.friendIdToDelete = amigo_id;
+    this.confirmModal.openModal();
+  }
+
+  onConfirmDelete(): void {
+    if (this.friendIdToDelete !== null) {
+      this.amigoService.removeFriend(this.friendIdToDelete).subscribe({
+        next: () => {
+          this.loadFriends();
+          this.alertService.showAlert('Amigo eliminado con éxito', 'danger');
+        },
+        error: (error) => {
+          console.error('Error al eliminar amigo:', error);
+          this.alertService.showAlert('Hubo un problema al eliminar al amigo. Intenta de nuevo.', 'danger');
+        }
+      });
+    }
+    this.friendIdToDelete = null;
+  }
+
+  onCancelDelete(): void {
+    this.friendIdToDelete = null;
   }
 }

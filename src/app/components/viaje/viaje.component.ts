@@ -1,19 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ViajeService } from '../../services/viaje.service';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { AlertService } from '../../services/alert.service';
-
-declare var bootstrap: any;
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-viaje',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, ConfirmModalComponent],
   templateUrl: './viaje.component.html',
-  styleUrl: './viaje.component.scss'
+  styleUrls: ['./viaje.component.scss']
 })
 export class ViajeComponent implements OnInit {
   viajes: any[] = [];
@@ -21,8 +20,14 @@ export class ViajeComponent implements OnInit {
   alertMessage: string | null = null;
   alertType: 'success' | 'danger' | 'warning' = 'success';
 
-  constructor(private viajeService: ViajeService, private router: Router,
-  private currentTripService: CurrentTripService, private alertService: AlertService) {}
+  @ViewChild('confirmModal') confirmModal!: ConfirmModalComponent;
+
+  constructor(
+    private viajeService: ViajeService,
+    private router: Router,
+    private currentTripService: CurrentTripService,
+    private alertService: AlertService
+  ) {}
 
   ngOnInit(): void {
     this.loadViajes();
@@ -68,12 +73,10 @@ export class ViajeComponent implements OnInit {
 
   openDeleteModal(viajeId: number): void {
     this.viajeIdToDelete = viajeId;
-    const modalElement = document.getElementById('deleteEventModal');
-    const modalInstance = new bootstrap.Modal(modalElement);
-    modalInstance.show();
+    this.confirmModal.openModal();
   }
 
-  confirmDeleteEvent(): void {
+  onConfirmDelete() {
     if (this.viajeIdToDelete !== null) {
       this.viajeService.deleteViaje(this.viajeIdToDelete).subscribe({
         next: () => {
@@ -101,5 +104,9 @@ export class ViajeComponent implements OnInit {
         }
       });
     }
+  }
+
+  onCancelDelete() {
+    this.viajeIdToDelete = null;
   }
 }

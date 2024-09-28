@@ -143,13 +143,7 @@ export class EventComponent implements OnInit {
 
   openConfirmDeleteModal(id_event: number) {
     this.eventIdToDelete = id_event;
-    this.confirmModal.modalElement.classList.add('show');
-    this.confirmModal.modalElement.style.display = 'block';
-    document.body.classList.add('modal-open');
-    const backdrop = document.createElement('div');
-    backdrop.className = 'modal-backdrop fade show';
-    backdrop.id = 'custom-backdrop';
-    document.body.appendChild(backdrop);
+    this.confirmModal.openModal();
   }
 
   onConfirmDelete() {
@@ -162,24 +156,13 @@ export class EventComponent implements OnInit {
         },
         error: error => {
           console.error('Error al eliminar el evento:', error);
+          this.alertService.showAlert('Error al eliminar el evento', 'danger');
         }
       });
     }
-    this.closeModal();
   }
 
   onCancelDelete() {
-    this.closeModal();
-  }
-
-  closeModal() {
     this.eventIdToDelete = null;
-    this.confirmModal.modalElement.classList.remove('show');
-    this.confirmModal.modalElement.style.display = 'none';
-    document.body.classList.remove('modal-open');
-    const backdrop = document.getElementById('custom-backdrop');
-    if (backdrop) {
-      backdrop.remove();
-    }
   }
 }

@@ -87,3 +87,14 @@
     margin-bottom: 8px;
   }
 }
+
+@media (max-width: 445px) {
+  .btn-sm {
+    min-width: 60px;
+    width: 60%;
+    font-size: 0.7rem;
+  }
+  .btn-lg{
+    font-size: 0.9rem;
+  }
+}

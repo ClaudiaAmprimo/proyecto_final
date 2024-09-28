@@ -55,4 +55,14 @@
       }
     </div>
   </div>
+
+  <app-confirm-modal
+    #confirmModal
+    [title]="'Eliminar Amigo'"
+    [message]="'¿Estás seguro de que deseas eliminar a este amigo? Esta acción no se puede deshacer.'"
+    [confirmButtonText]="'Eliminar'"
+    [cancelButtonText]="'Cancelar'"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()">
+  </app-confirm-modal>
 </div>
