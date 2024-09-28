@@ -23,8 +23,7 @@
           <img src="http://localhost:3000/uploads/vacaciones3.jpg" class="img-fluid" alt="Imagen del viaje">
           <div class="card-body text-center py-3">
             <h3 class="text-dark">{{ viaje.titulo }}</h3>
-            <p class="text-dark small-text">Inicio: {{ viaje.fecha_inicio | date:'dd/MM/yyyy' }}</p>
-            <p class="text-dark small-text">Fin: {{ viaje.fecha_fin | date:'dd/MM/yyyy' }}</p>
+            <p class="text-dark small-text">{{ viaje.fecha_inicio | date:'dd/MM/yyyy' }} - {{ viaje.fecha_fin | date:'dd/MM/yyyy' }}</p>
             <button (click)="onSelectViaje(viaje.id_viaje, viaje.titulo)" class="btn btn-outline-dark">VER DETALLES</button>
             <a [routerLink]="['/edit-viaje', viaje.id_viaje]" class="btn btn-outline-secondary mt-2">Editar Viaje</a>
             <a href="#" (click)="openDeleteModal(viaje.id_viaje); $event.preventDefault();" class="small text-secondary mt-2">Eliminar Viaje</a>

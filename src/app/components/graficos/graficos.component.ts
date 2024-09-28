@@ -225,6 +225,8 @@ export class GraficosComponent implements OnInit {
       return;
     }
 
+    const maxAmount = Math.max(...totalAmounts);
+
     const data = {
       labels: userNames,
       datasets: [{
@@ -259,7 +261,8 @@ export class GraficosComponent implements OnInit {
         maintainAspectRatio: false,
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            suggestedMax: maxAmount + (maxAmount * 0.1)
           }
         },
         plugins: {
@@ -273,7 +276,7 @@ export class GraficosComponent implements OnInit {
             align: 'top',
             formatter: (value: any) => {
               const amount = typeof value === 'number' ? value : 0;
-              return `€${amount.toFixed(2)}`;
+              return `${amount.toFixed(2)}€`;
             }
           }
         },
