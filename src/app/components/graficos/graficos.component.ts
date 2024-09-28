@@ -6,16 +6,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { CommonModule } from '@angular/common';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-graficos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmModalComponent],
   templateUrl: './graficos.component.html',
   styleUrl: './graficos.component.scss'
 })
 export class GraficosComponent implements OnInit {
   @ViewChild('costChart', { static: false }) costChart!: ElementRef;
+  @ViewChild('confirmModal') confirmModal!: ConfirmModalComponent;
+
   chart: any;
   viajeId: number | null = null;
   userId: number | null = null;
@@ -27,8 +30,13 @@ export class GraficosComponent implements OnInit {
 
   generalSimplifiedBalances: any[] = [];
   userSimplifiedBalances: any[] = [];
-
+  selectedBalance: any | null = null;
   isLoading = true;
+
+  modalTitle: string = 'Confirmar Acción';
+  modalMessage: string = '¿Está seguro de que desea realizar esta acción?';
+  modalConfirmButtonText: string = 'Aceptar';
+  modalCancelButtonText: string = 'Cancelar';
 
   constructor(
     private currentTripService: CurrentTripService,
@@ -220,7 +228,7 @@ export class GraficosComponent implements OnInit {
     const data = {
       labels: userNames,
       datasets: [{
-        label: 'Gastos Totales por Usuario (€)',
+        label: '',
         data: totalAmounts,
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
@@ -248,6 +256,7 @@ export class GraficosComponent implements OnInit {
       type: 'bar',
       data: data,
       options: {
+        maintainAspectRatio: false,
         scales: {
           y: {
             beginAtZero: true
@@ -255,7 +264,7 @@ export class GraficosComponent implements OnInit {
         },
         plugins: {
           legend: {
-            display: true,
+            display: false,
             position: 'top'
           },
           datalabels: {
@@ -339,6 +348,27 @@ export class GraficosComponent implements OnInit {
   }
 
   pagarDeuda(balance: any) {
+    this.selectedBalance = balance;
+    this.modalTitle = 'Confirmar Liquidación';
+    this.modalMessage = `¿Está seguro de que desea liquidar la deuda de ${balance.deudor_name} ${balance.deudor_surname} por ${balance.net_balance.toFixed(2)}€?`;
+    this.modalConfirmButtonText = 'Confirmar';
+    this.modalCancelButtonText = 'Cancelar';
+    this.confirmModal.openModal();
+  }
+
+  onConfirmLiquidar() {
+    if (this.selectedBalance) {
+      this.executePagarDeuda(this.selectedBalance);
+      this.selectedBalance = null;
+    }
+  }
+
+  onCancelLiquidar() {
+    console.log('Liquidación de deuda cancelada por el usuario.');
+    this.selectedBalance = null;
+  }
+
+  executePagarDeuda(balance: any) {
     const paymentAmount = balance.net_balance;
     if (paymentAmount > 0) {
       let remainingAmount = paymentAmount;
