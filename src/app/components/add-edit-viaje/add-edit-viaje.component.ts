@@ -118,7 +118,7 @@ export class AddEditViajeComponent implements OnInit {
         this.viajeService.updateViaje(this.viajeId, viajeData).subscribe({
           next: () => {
             console.log('Viaje actualizado exitosamente');
-            this.alertService.showAlert('Viaje actualizado exitosamente', 'success');
+            this.alertService.showAlert('Viaje actualizado exitosamente', 'warning');
             this.router.navigate(['/event', this.viajeId]);
           },
           error: (error) => {

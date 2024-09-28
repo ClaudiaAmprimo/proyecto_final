@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentTripService } from '../../services/current-trip.service';
+import { AlertService } from '../../services/alert.service';
 
 declare var bootstrap: any;
 
@@ -17,12 +18,26 @@ declare var bootstrap: any;
 export class ViajeComponent implements OnInit {
   viajes: any[] = [];
   viajeIdToDelete: number | null = null;
+  alertMessage: string | null = null;
+  alertType: 'success' | 'danger' | 'warning' = 'success';
 
   constructor(private viajeService: ViajeService, private router: Router,
-  private currentTripService: CurrentTripService) {}
+  private currentTripService: CurrentTripService, private alertService: AlertService) {}
 
   ngOnInit(): void {
     this.loadViajes();
+
+    this.alertService.alertMessage$.subscribe(alert => {
+      if (alert) {
+        this.alertMessage = alert.message;
+        this.alertType = alert.type;
+        setTimeout(() => {
+          this.alertService.clearAlert();
+        }, 5000);
+      } else {
+        this.alertMessage = null;
+      }
+    });
   }
 
   loadViajes(): void {
@@ -40,6 +55,7 @@ export class ViajeComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar los viajes:', error);
+        this.alertService.showAlert('Error al cargar los viajes', 'danger');
       }
     });
   }
@@ -62,6 +78,7 @@ export class ViajeComponent implements OnInit {
       this.viajeService.deleteViaje(this.viajeIdToDelete).subscribe({
         next: () => {
           console.log(`Viaje con ID ${this.viajeIdToDelete} eliminado exitosamente`);
+          this.alertService.showAlert('Viaje eliminado exitosamente', 'danger');
 
           const currentTripId = this.currentTripService.getCurrentTripId();
           if (currentTripId === this.viajeIdToDelete) {
@@ -74,12 +91,13 @@ export class ViajeComponent implements OnInit {
             }
           }
 
-          this.loadViajes(); 
+          this.loadViajes();
           this.viajeIdToDelete = null;
           this.router.navigate(['/viaje']);
         },
         error: (error) => {
           console.error('Error al eliminar el viaje:', error);
+          this.alertService.showAlert('Error al eliminar el viaje', 'danger');
         }
       });
     }

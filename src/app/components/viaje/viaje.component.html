@@ -1,5 +1,17 @@
 <div class="margen-navbar"></div>
 
+@if(alertMessage){
+  <div class="alert-container">
+    <div class="alert" [ngClass]="{
+      'alert-success': alertType === 'success',
+      'alert-danger': alertType === 'danger',
+      'alert-warning': alertType === 'warning'
+    }" role="alert">
+      {{ alertMessage }}
+    </div>
+  </div>
+}
+
 <div class="container mt-4">
   <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-secondary btn-lg" routerLink="/add-viaje">Crear Viaje</button>
