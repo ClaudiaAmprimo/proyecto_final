@@ -33,6 +33,16 @@
   </div>
 }
 
+<app-confirm-modal
+    #confirmModal
+    [title]="'Eliminar Evento'"
+    [message]="'¿Está seguro que desea eliminar este evento?'"
+    [confirmButtonText]="'Eliminar'"
+    [cancelButtonText]="'Cancelar'"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()">
+  </app-confirm-modal>
+
   <div class="table-responsive">
     @if(filteredEvents.length > 0){
       <table class="table table-hover">
@@ -62,7 +72,7 @@
               <td data-label="Comentarios">{{event.comentarios}}</td>
               <td>
                 <button [routerLink]="['/edit', event.id_event, viajeId]" type="button" class="btn btn-outline-secondary btn-sm me-2">EDIT</button>
-                <button (click)="deleteEvent(event.id_event!)" type="button" class="btn btn-outline-danger btn-sm">DELETE</button>
+                <button (click)="openConfirmDeleteModal(event.id_event!)" type="button" class="btn btn-outline-danger btn-sm">ELIMINAR</button>
               </td>
             </tr>
           }

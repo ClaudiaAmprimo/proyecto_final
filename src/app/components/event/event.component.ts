@@ -9,11 +9,12 @@ import { MapaComponent } from "../mapa-screen/mapa.component";
 import { MapViewEventComponent } from "../map-view-event/map-view-event.component";
 import { FullCalendarComponent } from "../full-calendar/full-calendar.component";
 import { CurrentTripService } from '../../services/current-trip.service.js';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component.js';
 
 @Component({
   selector: 'app-event',
   standalone: true,
-  imports: [CommonModule, RouterLink, MapaComponent, MapViewEventComponent, FullCalendarComponent],
+  imports: [CommonModule, RouterLink, MapaComponent, MapViewEventComponent, FullCalendarComponent, ConfirmModalComponent],
   templateUrl: './event.component.html',
   styleUrl: './event.component.scss'
 })
@@ -27,6 +28,9 @@ export class EventComponent implements OnInit {
   viajes: any[] = [];
   friendsList: any[] = [];
   viajeTitulo: string = '';
+  eventIdToDelete: number | null = null;
+
+  @ViewChild('confirmModal') confirmModal!: ConfirmModalComponent;
 
   constructor(private eventService: EventService, private alertService: AlertService,
     private route: ActivatedRoute, private amigoService: AmigoService, private router: Router,
@@ -68,6 +72,7 @@ export class EventComponent implements OnInit {
         this.alertMessage = null;
       }
     });
+    this.loadViajes();
   }
 
   loadFriendsByViaje(viajeId: number) {
@@ -115,20 +120,6 @@ export class EventComponent implements OnInit {
     });
   }
 
-  deleteEvent(id_event: number) {
-    this.eventService.deleteEvent(id_event).subscribe({
-      next: () => {
-        console.log(id_event);
-        this.alertService.showAlert('El evento ha sido eliminado con éxito', 'danger');
-        this.getListEvents();
-        this.eventService.notifyEventChanges();
-      },
-      error: error => {
-        console.error('Error al eliminar el evento:', error);
-      }
-    });
-  }
-
   onFilterChange(event: Event): void {
     const selectedViajeId = (event.target as HTMLSelectElement).value;
     if (selectedViajeId) {
@@ -148,5 +139,47 @@ export class EventComponent implements OnInit {
         console.error('Error al obtener los viajes:', error);
       }
     });
+  }
+
+  openConfirmDeleteModal(id_event: number) {
+    this.eventIdToDelete = id_event;
+    this.confirmModal.modalElement.classList.add('show');
+    this.confirmModal.modalElement.style.display = 'block';
+    document.body.classList.add('modal-open');
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    backdrop.id = 'custom-backdrop';
+    document.body.appendChild(backdrop);
+  }
+
+  onConfirmDelete() {
+    if (this.eventIdToDelete !== null) {
+      this.eventService.deleteEvent(this.eventIdToDelete).subscribe({
+        next: () => {
+          this.alertService.showAlert('El evento ha sido eliminado con éxito', 'danger');
+          this.getListEvents();
+          this.eventService.notifyEventChanges();
+        },
+        error: error => {
+          console.error('Error al eliminar el evento:', error);
+        }
+      });
+    }
+    this.closeModal();
+  }
+
+  onCancelDelete() {
+    this.closeModal();
+  }
+
+  closeModal() {
+    this.eventIdToDelete = null;
+    this.confirmModal.modalElement.classList.remove('show');
+    this.confirmModal.modalElement.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    const backdrop = document.getElementById('custom-backdrop');
+    if (backdrop) {
+      backdrop.remove();
+    }
   }
 }
