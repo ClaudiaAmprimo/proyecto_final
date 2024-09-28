@@ -13,11 +13,13 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AmigoService } from '../../services/amigo.service';
 import { CurrentTripService } from '../../services/current-trip.service';
+import { AlertService } from '../../services/alert.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-full-calendar',
   standalone: true,
-  imports: [FullCalendarModule, ReactiveFormsModule],
+  imports: [FullCalendarModule, ReactiveFormsModule, CommonModule],
   templateUrl: './full-calendar.component.html',
   styleUrl: './full-calendar.component.scss'
 })
@@ -76,6 +78,8 @@ export class FullCalendarComponent implements OnInit {
   selectedFriendsForDistribution: any[] = [];
   isEditing: boolean = false;
   operacion: string = 'Agregar ';
+  alertMessage: string | null = null;
+  alertType: 'success' | 'danger' | 'warning' = 'success';
 
   constructor(
     private eventService: EventService,
@@ -83,7 +87,8 @@ export class FullCalendarComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private amigoService: AmigoService,
-    private currentTripService: CurrentTripService
+    private currentTripService: CurrentTripService,
+    private alertService: AlertService
   ) {
     this.editEventForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
@@ -132,6 +137,18 @@ export class FullCalendarComponent implements OnInit {
     });
 
     this.loadViajes();
+
+    this.alertService.alertMessage$.subscribe(alert => {
+      if (alert) {
+        this.alertMessage = alert.message;
+        this.alertType = alert.type;
+        setTimeout(() => {
+          this.alertService.clearAlert();
+        }, 5000);
+      } else {
+        this.alertMessage = null;
+      }
+    });
   }
 
   loadEvents() {
@@ -296,10 +313,12 @@ export class FullCalendarComponent implements OnInit {
 
     this.eventService.updateEvent(Number(event.id), updatedEvent).subscribe({
       next: () => {
+        this.alertService.showAlert('Evento actualizado correctamente.', 'warning');
         this.loadEvents();
       },
       error: (error) => {
         console.error('Error al actualizar el evento:', error);
+        this.alertService.showAlert('Error al actualizar el evento.', 'danger');
       }
     });
   }
@@ -320,6 +339,7 @@ export class FullCalendarComponent implements OnInit {
     if (this.selectedEventId) {
       this.eventService.deleteEvent(this.selectedEventId).subscribe({
         next: () => {
+          this.alertService.showAlert('Evento eliminado correctamente.', 'danger');
           const modalElement = document.getElementById('confirmDeleteModal');
           const modalInstance = bootstrap.Modal.getInstance(modalElement!);
           modalInstance?.hide();
@@ -328,6 +348,7 @@ export class FullCalendarComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al eliminar el evento:', error);
+          this.alertService.showAlert('Error al eliminar el evento.', 'danger');
         }
       });
     }
@@ -361,6 +382,11 @@ export class FullCalendarComponent implements OnInit {
 
   onSubmit() {
     if (this.editEventForm.valid) {
+      if (this.selectedFriendsForDistribution.length === 0) {
+        console.warn('No hay amigos seleccionados para dividir el costo.');
+        this.alertService.showAlert('Debe seleccionar al menos un amigo para dividir el costo.', 'warning');
+        return;
+      }
       this.calculateCostDistribution();
 
       const formValue = this.editEventForm.value;
@@ -384,6 +410,7 @@ export class FullCalendarComponent implements OnInit {
       if (this.isEditing && this.selectedEventId) {
         this.eventService.updateEvent(this.selectedEventId, eventToSend).subscribe({
           next: () => {
+            this.alertService.showAlert('El evento ha sido actualizado con éxito.', 'warning');
             this.closeModal('editEventModal');
             this.loadEvents();
           },
@@ -394,6 +421,7 @@ export class FullCalendarComponent implements OnInit {
       } else {
         this.eventService.createEvent(eventToSend).subscribe({
           next: () => {
+            this.alertService.showAlert('El evento ha sido creado con éxito.', 'success');
             this.closeModal('editEventModal');
             this.loadEvents();
           },
