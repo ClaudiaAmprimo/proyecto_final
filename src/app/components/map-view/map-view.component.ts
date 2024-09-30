@@ -40,7 +40,7 @@ export class MapViewComponent implements AfterViewInit {
         mapboxgl.accessToken = response.token;
 
         const map = new mapboxgl.Map({
-          container: 'map',
+          container: 'map-view',
           style: 'mapbox://styles/mapbox/streets-v11',
           center: this.placesService.useLocation as [number, number],
           zoom: 14

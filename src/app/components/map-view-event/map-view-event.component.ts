@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { PlacesService } from '../../services/places.service';
 import { HttpClient } from '@angular/common/http';
 import mapboxgl, { LngLatBounds, Marker, Popup } from 'mapbox-gl';
@@ -8,6 +8,7 @@ import { Event as CustomEvent } from '../../interfaces/event.ts';
 import { BtnMapLocationEventComponent } from "../btn-map-location-event/btn-map-location-event.component";
 import { ActivatedRoute } from '@angular/router';
 import { CurrentTripService } from '../../services/current-trip.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-map-view-event',
@@ -16,12 +17,13 @@ import { CurrentTripService } from '../../services/current-trip.service';
   styleUrl: './map-view-event.component.scss',
   imports: [BtnMapLocationEventComponent]
 })
-export class MapViewEventComponent implements AfterViewInit {
+export class MapViewEventComponent implements OnInit, OnDestroy {
   events: CustomEvent[] = [];
   filteredEvents: CustomEvent[] = [];
   selectedCategories: string[] = ['Hospedaje', 'Transporte', 'Turismo', 'Comida'];
   viajeId: number | null = null;
   markers: Marker[] = [];
+  private subscription: Subscription = new Subscription();
 
   constructor(
     private http: HttpClient,
@@ -32,26 +34,35 @@ export class MapViewEventComponent implements AfterViewInit {
     private currentTripService: CurrentTripService
   ) {}
 
-  ngAfterViewInit(): void {
-    this.currentTripService.currentTripTitle$.subscribe((title) => {
-      this.viajeId = Number(localStorage.getItem('currentViajeId'));
-      this.loadEvents();
-    });
+  ngOnInit(): void {
+    this.subscription.add(
+      this.currentTripService.currentTripId$.subscribe((id) => {
+        this.viajeId = id;
+        this.loadEvents();
+      })
+    );
+
     this.placesService.getUserLocation().then(() => {
       if (!this.placesService.useLocation) {
         console.error("No user location available");
         return;
       }
 
-      this.eventService.eventChanges$.subscribe(() => {
-        this.loadEvents();
-      });
+      this.subscription.add(
+        this.eventService.eventChanges$.subscribe(() => {
+          this.loadEvents();
+        })
+      );
 
       this.initializeMap();
       this.loadEvents();
     }).catch((error) => {
       console.error("Error al obtener la ubicación del usuario:", error);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   initializeMap() {
@@ -86,12 +97,11 @@ export class MapViewEventComponent implements AfterViewInit {
 
   loadEvents() {
     this.eventService.getListEvents().subscribe(events => {
-      this.events = this.viajeId ? events.filter(event => event.viaje_id === this.viajeId) : events;
+      this.events = this.viajeId ? events.filter(event => event.viaje_id === this.viajeId) : [];
       this.clearEventMarkers();
       this.applyFilters();
     });
   }
-
 
   clearEventMarkers() {
     if (!this.mapService.isMapReady) return;
