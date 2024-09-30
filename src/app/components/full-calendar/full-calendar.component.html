@@ -76,12 +76,12 @@
           </div>
           <div class="row mt-2">
             <div class="col text-center">
-              <button [disabled]="editEventForm.invalid || selectedFriendsForDistribution.length === 0" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
+              <button [disabled]="editEventForm.invalid || selectedFriendsForDistribution.length === 0" type="submit" class="btn btn-success custom-button">Aceptar</button>
               <button type="button" class="btn btn-outline-secondary mx-2 custom-button" data-bs-dismiss="modal">Volver</button>
-              @if (selectedEventId) {
-                <button type="button" class="btn btn-outline-danger mx-2 custom-button" (click)="deleteEvent()">Eliminar</button>
-              }
             </div>
+            @if (selectedEventId) {
+              <button type="button" class="btn btn-link text-muted btn-volver" (click)="deleteEvent()">Eliminar</button>
+            }
           </div>
         </form>
       </div>

@@ -55,6 +55,13 @@
   font-size: 1rem;
   border-radius: 80px;
   margin: 8px;
+  cursor: pointer;
+}
+
+.btn-volver{
+  color: #6c757d;
+  font-weight: normal;
+  font-size: small;
 }
 
 @media (max-width: 768px) {

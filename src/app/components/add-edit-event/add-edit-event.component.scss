@@ -13,6 +13,7 @@
   font-size: 1rem;
   border-radius: 80px;
   margin: 8px;
+  cursor: pointer;
 }
 
 .modal-dialog {
@@ -51,4 +52,10 @@
   border: none;
   background: transparent;
   font-size: 1.5rem;
+}
+
+.btn-volver{
+  color: #6c757d;
+  font-weight: normal;
+  font-size: small;
 }

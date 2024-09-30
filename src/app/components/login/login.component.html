@@ -10,14 +10,14 @@
         <form [formGroup]="loginForm" (submit)="onSubmit()">
           <fieldset>
             <div>
-              <label for="exampleInputEmail1" class="form-label mt-4">Email address</label>
+              <label for="exampleInputEmail1" class="form-label mt-4">Email address *</label>
               <input  formControlName="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
               @if (email.hasError('required') && email.touched){
                 <p class="form-error">El email es requerido</p>
               }
             </div>
             <div>
-              <label for="exampleInputPassword1" class="form-label mt-4">Password</label>
+              <label for="exampleInputPassword1" class="form-label mt-4">Password *</label>
               <input formControlName="password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" autocomplete="off">
               @if (password.hasError('required') && password.touched){
                 <p class="form-error">El password es requerido</p>
@@ -35,6 +35,9 @@
               <a [routerLink]="['/register']" class="goToRegister">Regístrate si aun no eres usuario</a>
             </div>
           </fieldset>
+          <div class="mt-2">
+            <p class="text-end">* Campos requeridos</p>
+          </div>
         </form>
       </div>
     </div>

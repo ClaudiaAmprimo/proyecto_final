@@ -8,6 +8,7 @@
   font-size: 1rem;
   border-radius: 80px;
   margin: 8px;
+  cursor: pointer;
 }
 
 .select-scroll {
@@ -16,4 +17,10 @@
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 4px;
+}
+
+.btn-volver{
+  color: #6c757d;
+  font-weight: normal;
+  font-size: small;
 }

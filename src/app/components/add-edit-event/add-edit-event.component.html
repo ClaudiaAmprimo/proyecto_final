@@ -79,9 +79,9 @@
           </div>
           <div class="row mt-2">
             <div class="col text-center">
-              <button [disabled]="eventForm.invalid" type="submit" class="btn btn-outline-dark custom-button">Aceptar</button>
-              <button [routerLink]="['/event', viajeId]" type="button" class="btn btn-outline-secondary mx-2 custom-button">Volver</button>
+              <button [disabled]="eventForm.invalid" type="submit" class="btn btn-success custom-button">Aceptar</button>
             </div>
+            <button [routerLink]="['/event', viajeId]" type="button" class="btn btn-link text-muted btn-volver">Volver</button>
             <div class="mt-2">
               <p class="text-end">* Campos requeridos</p>
             </div>
