@@ -1,27 +1,63 @@
-# ProyectoFinal
+## Descripción
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.1.
+El proyecto es el frontend de una aplicación desarrollada en **Angular**, que permite gestionar viajes y eventos asociados, incluyendo funcionalidades de distribución de gastos entre los participantes, itinerario de viajes, calendario y mapa. Se comunica con un backend, que es necesario para obtener los datos que se mostrarán en la interfaz.
 
-## Development server
+> **Nota:** Para que el frontend funcione correctamente, es imprescindible que el backend esté en ejecución.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Prerrequisitos
 
-## Code scaffolding
+Antes de comenzar, asegúrate de tener instaladas las siguientes herramientas en tu sistema:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- [Node.js](https://nodejs.org/en/) (versión recomendada: v14 o superior)
+- [npm](https://www.npmjs.com/) (se instala automáticamente con Node.js)
+- [Angular CLI](https://angular.io/cli) (versión recomendada: v14 o superior)
 
-## Build
+### Verificar Instalaciones
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+  1. **Node.js y npm**
 
-## Running unit tests
+    Abre una terminal y ejecuta los siguientes comandos para verificar que están instalados correctamente:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+    ```bash
+    node -v
+    npm -v
 
-## Running end-to-end tests
+    Si no tienes Node.js y npm instalados, descárgalos e instálalos desde aquí: https://nodejs.org/en/
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+  2. **Angular CLI**
 
-## Further help
+    Verifica si tienes instalado Angular CLI ejecutando el siguiente comando:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+    ```bash
+    ng version
+    Si el comando no es reconocido, puedes instalar Angular CLI globalmente con:
+
+    ```bash
+    npm install -g @angular/cli
+
+    3. **Clonar el Repositorio**
+    Para clonar este repositorio en tu máquina local, ejecuta el siguiente comando en tu terminal:
+
+    ```bash
+    git clone https://github.com/ClaudiaAmprimo/proyecto_final.git
+
+  4. **Instalar Dependencias**
+
+    Una vez clonado el repositorio, navega al directorio del proyecto y ejecuta el siguiente comando para instalar las dependencias necesarias:
+
+    ```bash
+    cd proyecto_final
+    npm install
+
+
+### Ejecución del Proyecto
+
+**Para ejecutar el proyecto en modo de desarrollo, usa el siguiente comando:**
+
+  ```bash
+  ng serve -o
+  Esto abrirá automáticamente la aplicación en tu navegador predeterminado.
+
+**Notas adicionales**
+Asegúrate de tener el backend corriendo antes de iniciar el frontend para poder ver los datos correctamente.
+Puedes ajustar las configuraciones del servidor de desarrollo en el archivo angular.json si es necesario.
