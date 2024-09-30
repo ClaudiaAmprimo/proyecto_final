@@ -42,7 +42,7 @@ Antes de comenzar, asegúrate de tener instaladas las siguientes herramientas en
 
   4. **Instalar Dependencias**
 
-    Una vez clonado el repositorio, navega al directorio del proyecto y ejecuta el siguiente comando para instalar las dependencias necesarias:
+  Una vez clonado el repositorio, navega al directorio del proyecto y ejecuta el siguiente comando para instalar las dependencias necesarias:
 
     cd proyecto_final
     npm install
