@@ -1,6 +1,8 @@
 ## Descripción
 
-El proyecto es el frontend de una aplicación desarrollada en **Angular**, que permite gestionar viajes y eventos asociados, incluyendo funcionalidades de distribución de gastos entre los participantes, itinerario de viajes, calendario y mapa. Se comunica con un backend, que es necesario para obtener los datos que se mostrarán en la interfaz.
+Travel Hub es una aplicación desarrollada en **Angular**, que permite gestionar viajes y eventos asociados, incluyendo funcionalidades de distribución de gastos entre los participantes, itinerario de viajes, calendario y mapa.
+
+Se comunica con un backend, que es necesario para obtener los datos que se mostrarán en la interfaz.
 
 > **Nota:** Para que el frontend funcione correctamente, es imprescindible que el backend esté en ejecución.
 
@@ -14,38 +16,34 @@ Antes de comenzar, asegúrate de tener instaladas las siguientes herramientas en
 
 ### Verificar Instalaciones
 
+  Abre una terminal y ejecuta los siguientes comandos para verificar que están instalados correctamente:
+
   1. **Node.js y npm**
 
-    Abre una terminal y ejecuta los siguientes comandos para verificar que están instalados correctamente:
-
-    ```bash
     node -v
     npm -v
 
-    Si no tienes Node.js y npm instalados, descárgalos e instálalos desde aquí: https://nodejs.org/en/
+  Si no tienes Node.js y npm instalados, descárgalos e instálalos desde aquí: https://nodejs.org/en/
 
   2. **Angular CLI**
 
-    Verifica si tienes instalado Angular CLI ejecutando el siguiente comando:
+  Verifica si tienes instalado Angular CLI ejecutando el siguiente comando:
 
-    ```bash
     ng version
-    Si el comando no es reconocido, puedes instalar Angular CLI globalmente con:
 
-    ```bash
+  Si el comando no es reconocido, puedes instalar Angular CLI globalmente con:
+
     npm install -g @angular/cli
 
-    3. **Clonar el Repositorio**
+  3. **Clonar el Repositorio**
     Para clonar este repositorio en tu máquina local, ejecuta el siguiente comando en tu terminal:
 
-    ```bash
     git clone https://github.com/ClaudiaAmprimo/proyecto_final.git
 
   4. **Instalar Dependencias**
 
     Una vez clonado el repositorio, navega al directorio del proyecto y ejecuta el siguiente comando para instalar las dependencias necesarias:
 
-    ```bash
     cd proyecto_final
     npm install
 
@@ -54,9 +52,9 @@ Antes de comenzar, asegúrate de tener instaladas las siguientes herramientas en
 
 **Para ejecutar el proyecto en modo de desarrollo, usa el siguiente comando:**
 
-  ```bash
-  ng serve -o
-  Esto abrirá automáticamente la aplicación en tu navegador predeterminado.
+    ng serve -o
+
+Esto abrirá automáticamente la aplicación en tu navegador predeterminado.
 
 **Notas adicionales**
 Asegúrate de tener el backend corriendo antes de iniciar el frontend para poder ver los datos correctamente.
