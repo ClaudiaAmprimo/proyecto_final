@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
+import { environment } from '../../../environments/environment';
 
 declare var bootstrap: any;
 
@@ -16,6 +17,7 @@ declare var bootstrap: any;
   styleUrl: './perfil.component.scss'
 })
 export class PerfilComponent implements OnInit {
+  public baseUrl: string = environment.endpoint;
   userPhotoUrl: string | null = null;
   userName: string | null = null;
   userSurname: string | null = null;
@@ -37,7 +39,7 @@ export class PerfilComponent implements OnInit {
     this.authService.getUserProfile().subscribe({
       next: (response: UserResponse) => {
         const user = response.data;
-        this.userPhotoUrl = `http://localhost:3000/uploads/${user.photo}`;
+        this.userPhotoUrl = `${this.baseUrl}uploads/${user.photo}`;
         this.userName = user.name;
         this.userSurname = user.surname;
         this.userEmail = user.email;
@@ -95,7 +97,7 @@ export class PerfilComponent implements OnInit {
         next: response => {
           console.log('Profile updated successfully');
 
-          this.userPhotoUrl = `http://localhost:3000/uploads/${response.data.photo}`;
+          this.userPhotoUrl = `${this.baseUrl}uploads/${response.data.photo}`;
           this.userName = response.data.name;
           this.userSurname = response.data.surname;
           this.closeEditModal();
@@ -135,6 +137,6 @@ export class PerfilComponent implements OnInit {
 
 
   onImageError() {
-    this.userPhotoUrl = 'http://localhost:3000/uploads/Profile_avatar_placeholder.png';
+    this.userPhotoUrl = `${this.baseUrl}uploads/Profile_avatar_placeholder.png`;
   }
 }

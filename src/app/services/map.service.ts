@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LngLatLike, Map } from 'mapbox-gl';
 import { map, Observable } from 'rxjs';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Event as CustomEvent } from '../interfaces/event.ts';
 

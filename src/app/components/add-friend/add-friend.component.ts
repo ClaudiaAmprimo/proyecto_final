@@ -6,6 +6,7 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { User } from '../../interfaces/user';
 import { AlertService } from '../../services/alert.service';
 import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-add-friend',
@@ -15,6 +16,8 @@ import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.com
   styleUrls: ['./add-friend.component.scss']
 })
 export class AddFriendComponent implements OnInit{
+  public baseUrl: string = environment.endpoint;
+  
   searchControl = new FormControl('');
   searchResults: User[] = [];
   friendsList: User[] = [];

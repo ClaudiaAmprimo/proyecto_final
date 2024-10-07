@@ -9,6 +9,7 @@ import { BtnMapLocationEventComponent } from "../btn-map-location-event/btn-map-
 import { ActivatedRoute } from '@angular/router';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-map-view-event',
@@ -18,6 +19,8 @@ import { Subscription } from 'rxjs';
   imports: [BtnMapLocationEventComponent]
 })
 export class MapViewEventComponent implements OnInit, OnDestroy {
+  public baseUrl: string = environment.endpoint;
+
   events: CustomEvent[] = [];
   filteredEvents: CustomEvent[] = [];
   selectedCategories: string[] = ['Hospedaje', 'Transporte', 'Turismo', 'Comida'];
@@ -66,7 +69,7 @@ export class MapViewEventComponent implements OnInit, OnDestroy {
   }
 
   initializeMap() {
-    this.http.get<{ token: string }>('http://localhost:3000/mapbox/token').subscribe({
+    this.http.get<{ token: string }>(`${this.baseUrl}mapbox/token`).subscribe({
       next: (response) => {
         mapboxgl.accessToken = response.token;
 

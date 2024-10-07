@@ -15,6 +15,7 @@ import { AmigoService } from '../../services/amigo.service';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { AlertService } from '../../services/alert.service';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-full-calendar',
@@ -24,6 +25,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './full-calendar.component.scss'
 })
 export class FullCalendarComponent implements OnInit {
+  public baseUrl: string = environment.endpoint;
   @Input() viajeId: number | null = null;
 
   calendarOptions: CalendarOptions = {

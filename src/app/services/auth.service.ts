@@ -2,13 +2,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { User, UserResponse } from '../interfaces/user';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/auth';
-  private userBaseUrl = 'http://localhost:3000/user';
+  private baseUrl = `${environment.endpoint}auth`;
+  private userBaseUrl = `${environment.endpoint}user`;
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   private userId: number | null = null;
@@ -23,7 +24,7 @@ export class AuthService {
       this.userId = userObj.id_user;
 
       if (userObj.photo) {
-        this.userPhotoUrlSubject.next(`http://localhost:3000/uploads/${userObj.photo}`);
+        this.userPhotoUrlSubject.next(`${environment.endpoint}uploads/${userObj.photo}`);
       }
     }
   }
@@ -35,7 +36,7 @@ export class AuthService {
           next: (response) => {
             console.log('User profile fetched:', response);
             if (response.data && response.data.photo) {
-              this.userPhotoUrlSubject.next(`http://localhost:3000/uploads/${response.data.photo}`);
+              this.userPhotoUrlSubject.next(`${environment.endpoint}uploads/${response.data.photo}`);
             }
           },
           error: (error) => console.error('Error fetching user profile:', error)
@@ -50,7 +51,7 @@ export class AuthService {
           next: (response) => {
             console.log('Profile updated:', response);
             if (response.data && response.data.photo) {
-              const newPhotoUrl = `http://localhost:3000/uploads/${response.data.photo}`;
+              const newPhotoUrl = `${environment.endpoint}uploads/${response.data.photo}`;
               this.userPhotoUrlSubject.next(newPhotoUrl);
 
               const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -81,7 +82,7 @@ export class AuthService {
           this.userId = userObj.id_user;
 
           if (userObj.photo) {
-            this.userPhotoUrlSubject.next(`http://localhost:3000/uploads/${userObj.photo}`);
+            this.userPhotoUrlSubject.next(`${environment.endpoint}uploads/${userObj.photo}`);
           }
         } else {
           console.error('Login failed:', response.message);
@@ -102,7 +103,7 @@ export class AuthService {
             this.isAuthenticatedSubject.next(true);
 
             if (response.data.user.photo) {
-              this.userPhotoUrlSubject.next(`http://localhost:3000/uploads/${response.data.user.photo}`);
+              this.userPhotoUrlSubject.next(`${environment.endpoint}uploads/${response.data.user.photo}`);
             }
           }
         } else {

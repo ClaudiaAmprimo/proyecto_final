@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import { Event } from '../interfaces/event.ts';
 

@@ -10,6 +10,7 @@ import { CurrentTripService } from '../../services/current-trip.service';
 import { Collapse } from 'bootstrap';
 import { EventService } from '../../services/event.service';
 import { ViajeService } from '../../services/viaje.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -19,6 +20,8 @@ import { ViajeService } from '../../services/viaje.service';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent implements OnInit {
+  public baseUrl: string = environment.endpoint;
+  
   isAuthenticated$: Observable<boolean> = new Observable<boolean>();
   userPhotoUrl$: Observable<string | null>;
   viajeTitulo: string = '';

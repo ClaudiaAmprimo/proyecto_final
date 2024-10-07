@@ -24,7 +24,7 @@
           @for (user of searchResults; track user.id_user) {
             <li>
               @if(user.photo) {
-                <img [src]="'http://localhost:3000/uploads/' + user.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+                <img [src]="baseUrl + 'uploads/' + + user.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
               }
               <span class="me-auto">{{ user.name }} {{ user.surname || '' }} - {{ user.email || '' }}</span>
               <button (click)="addFriend(user.id_user)" class="btn btn-secondary custom-button btn-sm">Agregar</button>
@@ -43,7 +43,7 @@
           @for (friend of friendsList; track friend.id_user) {
             <li>
               @if(friend.photo) {
-                <img [src]="'http://localhost:3000/uploads/' + friend.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+                <img [src]="baseUrl + 'uploads/' + friend.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
               }
               <span class="me-auto">{{ friend.name }} {{ friend.surname || '' }}</span>
               <button (click)="removeFriend(friend.id_user)" class="btn btn-danger custom-button btn-sm">Eliminar</button>

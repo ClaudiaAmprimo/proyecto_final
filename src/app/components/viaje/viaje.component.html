@@ -20,7 +20,7 @@
     @for (viaje of viajes; track viaje) {
       <div class="col-md-4 mb-4 d-flex align-items-stretch">
         <div class="destination-card" style="text-decoration: none; color: inherit; background-color: #f0f4f7;">
-          <img src="http://localhost:3000/uploads/vacaciones3.jpg" class="img-fluid" alt="Imagen del viaje">
+          <img [src]="baseUrl + 'uploads/vacaciones3.jpg'" class="img-fluid" alt="Imagen del viaje">
           <div class="card-body text-center py-3">
             <h3 class="text-dark">{{ viaje.titulo }}</h3>
             <p class="text-dark small-text">{{ viaje.fecha_inicio | date:'dd/MM/yyyy' }} - {{ viaje.fecha_fin | date:'dd/MM/yyyy' }}</p>

@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../services/alert.service';
 import { CommonModule } from '@angular/common';
 import { AmigoService } from '../../services/amigo.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-add-edit-event',
@@ -23,6 +24,8 @@ import { AmigoService } from '../../services/amigo.service';
   styleUrl: './add-edit-event.component.scss'
 })
 export class AddEditEventComponent implements OnInit {
+  public baseUrl: string = environment.endpoint;
+  
   eventForm: FormGroup;
   user_id_paid: FormControl;
   cost_distribution: FormControl;

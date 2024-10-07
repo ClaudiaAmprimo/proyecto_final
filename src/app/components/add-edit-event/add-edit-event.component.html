@@ -105,7 +105,7 @@
             <li class="list-group-item d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
                 @if(friend.photo) {
-                  <img [src]="'http://localhost:3000/uploads/' + friend.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+                  <img [src]="baseUrl + 'uploads/' + friend.photo" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
                 }
                 <span>{{ friend.name }} {{ friend.surname }}</span>
               </div>

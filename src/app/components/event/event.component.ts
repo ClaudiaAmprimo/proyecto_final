@@ -10,6 +10,7 @@ import { MapViewEventComponent } from "../map-view-event/map-view-event.componen
 import { FullCalendarComponent } from "../full-calendar/full-calendar.component";
 import { CurrentTripService } from '../../services/current-trip.service.js';
 import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component.js';
+import { environment } from '../../../environments/environment.js';
 
 @Component({
   selector: 'app-event',
@@ -19,6 +20,8 @@ import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.com
   styleUrl: './event.component.scss'
 })
 export class EventComponent implements OnInit {
+  public baseUrl: string = environment.endpoint;
+
   listEvents: CustomEvent[] = [];
   alertMessage: string | null = null;
   alertType: 'success' | 'danger' | 'warning' = 'success';
@@ -85,7 +88,7 @@ export class EventComponent implements OnInit {
           .filter(friend => friend.id_user !== currentUserId)
           .map(friend => ({
             ...friend,
-            photoUrl: friend.photo ? `http://localhost:3000/uploads/${friend.photo}` : 'http://localhost:3000/uploads/Profile_avatar_placeholder.png'
+            photoUrl: friend.photo ? `${this.baseUrl}uploads/${friend.photo}` : `${this.baseUrl}uploads/Profile_avatar_placeholder.png`
           }));
       },
       error: (error) => {

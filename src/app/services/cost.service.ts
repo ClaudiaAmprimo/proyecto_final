@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { CostDistribution } from '../interfaces/event.ts';
+import { environment } from '../../environments/environment.js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CostService {
-  private baseUrl = 'http://localhost:3000/cost-distributions';
+  private baseUrl = `${environment.endpoint}cost-distributions`;
 
   constructor(private http: HttpClient) {}
 

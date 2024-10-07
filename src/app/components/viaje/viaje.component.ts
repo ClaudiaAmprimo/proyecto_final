@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentTripService } from '../../services/current-trip.service';
 import { AlertService } from '../../services/alert.service';
 import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-viaje',
@@ -15,6 +16,8 @@ import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.com
   styleUrls: ['./viaje.component.scss']
 })
 export class ViajeComponent implements OnInit {
+  public baseUrl: string = environment.endpoint;
+  
   viajes: any[] = [];
   viajeIdToDelete: number | null = null;
   alertMessage: string | null = null;

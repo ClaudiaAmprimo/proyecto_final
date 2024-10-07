@@ -5,6 +5,7 @@ import mapboxgl, { LngLatBounds, Marker, Popup } from 'mapbox-gl';
 import { MapService } from '../../services/map.service';
 import { EventService } from '../../services/event.service';
 import { Event } from '../../interfaces/event.ts';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-map-view',
@@ -13,6 +14,8 @@ import { Event } from '../../interfaces/event.ts';
   styleUrls: ['./map-view.component.scss']
 })
 export class MapViewComponent implements AfterViewInit {
+  public baseUrl: string = environment.endpoint;
+
   events: Event[] = [];
   filteredEvents: Event[] = [];
   selectedCategories: string[] = ['Hospedaje', 'Transporte', 'Turismo', 'Comida'];
@@ -35,7 +38,7 @@ export class MapViewComponent implements AfterViewInit {
   }
 
   initializeMap() {
-    this.http.get<{ token: string }>('http://localhost:3000/mapbox/token').subscribe({
+    this.http.get<{ token: string }>(`${this.baseUrl}mapbox/token`).subscribe({
       next: (response) => {
         mapboxgl.accessToken = response.token;
 

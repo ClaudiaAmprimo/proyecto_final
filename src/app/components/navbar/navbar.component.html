@@ -46,7 +46,7 @@
               </a>
             } @else {
               <a routerLink="/perfil" (click)="closeNavbar()">
-                <img src="http://localhost:3000/uploads/Profile_avatar_placeholder.png" alt="User Avatar" class="rounded-circle" width="40" height="40">
+                <img [src]="baseUrl + 'uploads/Profile_avatar_placeholder.png'" alt="User Avatar" class="rounded-circle" width="40" height="40">
               </a>
             }
           </li>
