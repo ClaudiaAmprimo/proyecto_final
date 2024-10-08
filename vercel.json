@@ -1,8 +1,41 @@
 {
+  "version": 2,
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "https://backendproyecto-production-db34.up.railway.app/:match*"
+      "source": "/auth/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/auth/$1"
+    },
+    {
+      "source": "/user/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/user/$1"
+    },
+    {
+      "source": "/test/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/test/$1"
+    },
+    {
+      "source": "/viaje/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/viaje/$1"
+    },
+    {
+      "source": "/event/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/event/$1"
+    },
+    {
+      "source": "/users-viajes/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/users-viajes/$1"
+    },
+    {
+      "source": "/mapbox/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/mapbox/$1"
+    },
+    {
+      "source": "/friends/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/friends/$1"
+    },
+    {
+      "source": "/cost-distributions/(.*)",
+      "destination": "https://backendproyecto-production-db34.up.railway.app/cost-distributions/$1"
     }
   ],
   "headers": [
@@ -10,20 +43,8 @@
       "source": "/(.*)",
       "headers": [
         {
-          "key": "Access-Control-Allow-Credentials",
-          "value": "true"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }
